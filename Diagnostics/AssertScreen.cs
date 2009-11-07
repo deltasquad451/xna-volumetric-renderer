@@ -55,7 +55,7 @@ namespace Graphics.Diagnostics
 			SpriteFontEx fontEx = VolumetricRenderer.Game.ScreenManager.DefaultFontEx;
 
 			// Set up all the text to be drawn.
-			float yPos = 10f;
+			float yPos = 0;
 			PlaceAssertText("ASSERT:", ref yPos, ref fontEx, width);
 			PlaceAssertText((args.Condition == "" ? "(unavailable)" : args.Condition), ref yPos, ref fontEx, width);
 
@@ -72,6 +72,19 @@ namespace Graphics.Diagnostics
 
 			yPos += fontEx.font.LineSpacing * 2;
 			PlaceAssertText("Press Enter to quit...", ref yPos, ref fontEx, width);
+
+			// Shift all the text down a bit so it's not right at the top of the screen.
+			int height = VolumetricRenderer.Game.GraphicsDevice.PresentationParameters.BackBufferHeight;
+			float yOffset = (height - (fontEx.font.LineSpacing * (assertText.Count + 4))) / 3f;
+			if (yOffset < 5f)
+				yOffset = 5f;
+
+			for (int i = 0; i < assertText.Count; ++i)
+			{
+				AssertText at = assertText[i];
+				at.position.Y += yOffset;
+				assertText[i] = at;
+			}
 
 			// Set up the flashing text parameters.
 			flashColor = Color.White;
