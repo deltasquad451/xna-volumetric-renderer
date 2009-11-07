@@ -220,14 +220,18 @@ namespace Engine.Diagnostics
 
 					streamWriter.Close();
 
+					// Remove the base directory from the filename, since it's not really necessary.
+					fileName = stackFrames[0].GetFileName();
+					if (rootDir != "")
+						fileName = fileName.Replace(rootDir, "");
+
 					// Get the additional message about the assert, if given.
 					string msg = "";
 					if (messages.Length > 1)
 						msg = messages[1];
 
 					hasAsserted = true;
-					RaiseAssertEvent(new DebugEventArgs(conditionString, msg, stackFrames[0].GetMethod().ToString(), 
-						stackFrames[0].GetFileName().Replace(rootDir, ""), stackFrames[0].GetFileLineNumber()));
+					RaiseAssertEvent(new DebugEventArgs(conditionString, msg, stackFrames[0].GetMethod().ToString(), fileName, stackFrames[0].GetFileLineNumber()));
 
 					// Block until notified, if requested.
 					if (blockAfterAssert)
