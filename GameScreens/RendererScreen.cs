@@ -32,7 +32,7 @@ namespace Graphics.GameScreens
 
 			MenuEntry test1 = new MenuEntry("Test - Exit Renderer", font, new Vector2(10f, 0f));
 			test1.Selected += new EventHandler<MenuEventArgs>(test1_Selected);
-			MenuEntries.Add(test1);
+            MenuEntries.Add(test1);
 
 			VolumetricRenderer.Game.backgroundScreen.AlwaysVisible = false; // temp hack
 		}
