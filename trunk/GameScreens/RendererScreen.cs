@@ -9,6 +9,7 @@
 #region Using Statements
 using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Engine.Diagnostics;
 using Graphics.Diagnostics;
@@ -16,10 +17,13 @@ using Graphics.Diagnostics;
 
 namespace Graphics.GameScreens
 {
-	public class RendererScreen : MenuScreen
+	public class RendererScreen : Engine.Screen.GameScreen
 	{
 		#region Fields
+		private ContentManager rendererContent;
 		private Texture2D background;
+		private SpriteFont font;
+		private SpriteBatch spriteBatch;
 		#endregion
 
 		#region Initialization
@@ -27,29 +31,43 @@ namespace Graphics.GameScreens
 			: base()
 		{
 			TransitionOnTime = TimeSpan.FromSeconds(0.25);
-
-			SpriteFont font = MenuFontEx.font;
-
-			MenuEntry test1 = new MenuEntry("Test - Exit Renderer", font, new Vector2(10f, 0f));
-			test1.Selected += new EventHandler<MenuEventArgs>(test1_Selected);
-            MenuEntries.Add(test1);
-
-			VolumetricRenderer.Game.backgroundScreen.AlwaysVisible = false; // temp hack
 		}
 
 		public override void LoadContent()
 		{
 			base.LoadContent();
 
-			background = MenuContent.Load<Texture2D>("renderer");
+			rendererContent = new ContentManager(VolumetricRenderer.Game.Services, "Content\\GameScreens");
+			background = rendererContent.Load<Texture2D>("renderer");
+			font = rendererContent.Load<SpriteFont>("menufont");
+			spriteBatch = new SpriteBatch(ScreenManager.GraphicsDevice);
+		}
+
+		public override void UnloadContent()
+		{
+			rendererContent.Unload();
+
+			base.UnloadContent();
 		}
 		#endregion
 
-		#region Events
-		private void test1_Selected(object sender, MenuEventArgs args)
+		#region Update
+		public override void Update(GameTime gameTime, bool hasFocus, bool isObscured)
 		{
-			VolumetricRenderer.Game.backgroundScreen.AlwaysVisible = true; // temp hack
-			Finished();
+			base.Update(gameTime, hasFocus, isObscured);
+		}
+
+		public override void HandleInput(Engine.Input.InputState input)
+		{
+			base.HandleInput(input);
+
+			if (input.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.Escape, PlayerIndex.One))
+			{
+				// Reload the main menu and return.
+				ScreenManager.AddScreen(new BackgroundScreen());
+				ScreenManager.AddScreen(new MainMenuScreen());
+				Finished();
+			}
 		}
 		#endregion
 
@@ -60,10 +78,11 @@ namespace Graphics.GameScreens
 			Rectangle fullscreen = new Rectangle(0, 0, viewport.Width, viewport.Height);
 			byte alpha = TransitionAlpha;
 
-			SpriteBatch.Begin();
-			SpriteBatch.Draw(background, fullscreen, new Color(alpha, alpha, alpha));
-			SpriteBatch.DrawString(MenuFontEx.font, "Here's where our awesome renderer will be showcased!", new Vector2(250f, 450f), new Color(Color.White, alpha));
-			SpriteBatch.End();
+			spriteBatch.Begin();
+			spriteBatch.Draw(background, fullscreen, new Color(alpha, alpha, alpha));
+			spriteBatch.DrawString(font, "Here's where our awesome renderer will be showcased!", new Vector2(250f, 450f), new Color(Color.White, alpha));
+			spriteBatch.DrawString(font, "ESC - Exit Renderer", new Vector2(10f, 915f), new Color(Color.Yellow, alpha));
+			spriteBatch.End();
 
 			base.Draw(gameTime);
 		}

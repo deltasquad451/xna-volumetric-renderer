@@ -26,35 +26,51 @@ namespace Graphics.GameScreens
 
 			SpriteFont font = MenuFontEx.font;
 
-			MenuEntry test1 = new MenuEntry("Test - Launch Renderer", font, new Vector2(10.0f, 0.0f));
-			test1.Selected += new EventHandler<MenuEventArgs>(test1_Selected);
-			MenuEntries.Add(test1);
+			MenuEntry entry1 = new MenuEntry("Launch Renderer", font, new Vector2(530f, 400f));
+			entry1.Selected += new EventHandler<MenuEventArgs>(LaunchRenderer_Selected);
+			MenuEntries.Add(entry1);
 
-			MenuEntry test2 = new MenuEntry("Test - Assertion Failure", font, new Vector2(10.0f, (float)font.LineSpacing + test1.Position.Y));
-			test2.Selected += new EventHandler<MenuEventArgs>(test2_Selected);
-			MenuEntries.Add(test2);
+			MenuEntry entry2 = new MenuEntry("Exit App", font, new Vector2(590f, (float)font.LineSpacing + entry1.Position.Y));
+			entry2.Selected += new EventHandler<MenuEventArgs>(ExitApp_Selected);
+			MenuEntries.Add(entry2);
 
-			MenuEntry test3 = new MenuEntry("Test - Exit App", font, new Vector2(10.0f, (float)font.LineSpacing + test2.Position.Y));
-			test3.Selected += new EventHandler<MenuEventArgs>(test3_Selected);
-			MenuEntries.Add(test3);
+			MenuEntry test = new MenuEntry("Test - Assertion Failure", font, new Vector2(480f, (float)font.LineSpacing + entry2.Position.Y));
+			test.Selected += new EventHandler<MenuEventArgs>(test_Selected);
+			//MenuEntries.Add(test);
 		}
 		#endregion
 
 		#region Events
-		private void test1_Selected(object sender, MenuEventArgs args)
+		private void LaunchRenderer_Selected(object sender, MenuEventArgs args)
 		{
+			ScreenManager.RemoveAllScreens();
 			ScreenManager.AddScreen(new RendererScreen());
 		}
 
-		private void test2_Selected(object sender, MenuEventArgs args)
+		private void ExitApp_Selected(object sender, MenuEventArgs args)
+		{
+			VolumetricRenderer.Game.Exit();
+		}
+
+		private void test_Selected(object sender, MenuEventArgs args)
 		{
 			Debug.Assert(false, "false", "Here's where you can give extra info about the assert. "
 				+ "A callstack of the assert is also outputted to the file assert.txt in the bin folder.");
 		}
+		#endregion
 
-		private void test3_Selected(object sender, MenuEventArgs args)
+		#region Draw
+		public override void Draw(GameTime gameTime)
 		{
-			VolumetricRenderer.Game.Exit();
+			base.Draw(gameTime);
+
+			Color color = new Color(Color.White, TransitionAlpha);
+
+			SpriteBatch.Begin();
+			SpriteBatch.DrawString(MenuFontEx.font, "CS580 Final Project", new Vector2(375f, 80f), color, 0, Vector2.Zero, 2f, SpriteEffects.None, 0);
+			SpriteBatch.DrawString(MenuFontEx.font, "Volumetric Renderer", new Vector2(370f, 150f), color, 0, Vector2.Zero, 2f, SpriteEffects.None, 0);
+			SpriteBatch.DrawString(MenuFontEx.font, "Brandon Booth - Jorge Garrido - Evan Hatch - Brian Valdillez", new Vector2(200f, 870f), color);
+			SpriteBatch.End();
 		}
 		#endregion
 	}

@@ -50,8 +50,8 @@ namespace Graphics.GameScreens
             Rectangle fullscreen = new Rectangle(0, 0, viewport.Width, viewport.Height);
             byte alpha = TransitionAlpha;
 
-            SpriteBatch.Begin(SpriteBlendMode.None);
-			SpriteBatch.Draw(background, fullscreen, new Color(alpha, alpha, alpha));
+            SpriteBatch.Begin();
+			SpriteBatch.Draw(background, fullscreen, new Color(alpha, alpha, alpha, 100));
 			SpriteBatch.End();
         }
         #endregion
