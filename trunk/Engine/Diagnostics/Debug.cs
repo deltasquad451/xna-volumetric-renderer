@@ -26,8 +26,7 @@ namespace Engine.Diagnostics
 	public class DebugEventArgs : EventArgs
 	{
 		#region Fields
-		private string condition;
-		private string message;
+		private string[] messages;
 		private string methodName;
 		private string fileName;
 		private int lineNumber;
@@ -35,21 +34,12 @@ namespace Engine.Diagnostics
 
 		#region Properties
 		/// <summary>
-		/// Gets the condition that produced the assert, if supplied.
+		/// Gets the messages associated with the assert, if any.
 		/// </summary>
-		public string Condition
+		public string[] Messages
 		{
 			get
-			{ return condition; }
-		}
-
-		/// <summary>
-		/// Gets the message associated with the assert, if any.
-		/// </summary>
-		public string Message
-		{
-			get
-			{ return message; }
+			{ return messages; }
 		}
 
 		/// <summary>
@@ -81,15 +71,13 @@ namespace Engine.Diagnostics
 		#endregion
 
 		#region Initialization
-		/// <param name="condition">Condition that produced the assert.</param>
-		/// <param name="message">Message associated with the assert.</param>
+		/// <param name="messages">Messages associated with the assert.</param>
 		/// <param name="methodName">Method in which the assert occurred.</param>
 		/// <param name="fileName">Filename in which the assert occurred.</param>
 		/// <param name="lineNumber">Line number of the assertion check.</param>
-		public DebugEventArgs(string condition, string message, string methodName, string fileName, int lineNumber)
+		public DebugEventArgs(string[] messages, string methodName, string fileName, int lineNumber)
 		{
-			this.condition = condition;
-			this.message = message;
+			this.messages = messages;
 			this.methodName = methodName;
 			this.fileName = fileName;
 			this.lineNumber = lineNumber;
@@ -178,10 +166,7 @@ namespace Engine.Diagnostics
 		/// Asserts that the supplied condition is true, and displays an error message if it's false.
 		/// </summary>
 		/// <param name="condition">Expression to verify.</param>
-		/// <param name="messages">Optional messages for the assert. The first string should be the
-		/// condition given, and the second string should be an additional message about the assert.
-		/// If you don't want to give the condition as a string but do want to give a message, then
-		/// pass an empty string as the first string (e.g. Debug.Assert(cond, "", "oops")).</param>
+		/// <param name="messages">Optional messages for the assert.</param>
 		[Conditional("DEBUG")]
 		public static void Assert(bool condition, params string[] messages)
 		{
@@ -193,12 +178,15 @@ namespace Engine.Diagnostics
 					StackFrame[] stackFrames = stackTrace.GetFrames();
 					StreamWriter streamWriter = File.CreateText(".\\assert.txt");
 
-					// Get the string-ized condition, if given.
-					string conditionString = "";
-					if (messages.Length > 0)
-						conditionString = messages[0];
+					streamWriter.WriteLine("ASSERT:");
 
-					streamWriter.WriteLine("ASSERT: " + conditionString + "\n");
+					// Write any messages given about the assert.
+					if (messages.Length > 0)
+						for (int i = 0; i < messages.Length; ++i)
+							streamWriter.WriteLine(messages[i] + streamWriter.NewLine);
+					else
+						streamWriter.WriteLine("(no info)" + streamWriter.NewLine);
+
 					streamWriter.WriteLine("Callstack:");
 
 					string fileName;
@@ -225,13 +213,8 @@ namespace Engine.Diagnostics
 					if (rootDir != "")
 						fileName = fileName.Replace(rootDir, "");
 
-					// Get the additional message about the assert, if given.
-					string msg = "";
-					if (messages.Length > 1)
-						msg = messages[1];
-
 					hasAsserted = true;
-					RaiseAssertEvent(new DebugEventArgs(conditionString, msg, stackFrames[0].GetMethod().ToString(), fileName, stackFrames[0].GetFileLineNumber()));
+					RaiseAssertEvent(new DebugEventArgs(messages, stackFrames[0].GetMethod().ToString(), fileName, stackFrames[0].GetFileLineNumber()));
 
 					// Block until notified, if requested.
 					if (blockAfterAssert)

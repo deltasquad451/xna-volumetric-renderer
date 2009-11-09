@@ -33,10 +33,6 @@ namespace Graphics.GameScreens
 			MenuEntry entry2 = new MenuEntry("Exit App", font, new Vector2(590f, (float)font.LineSpacing + entry1.Position.Y));
 			entry2.Selected += new EventHandler<MenuEventArgs>(ExitApp_Selected);
 			MenuEntries.Add(entry2);
-
-			MenuEntry test = new MenuEntry("Test - Assertion Failure", font, new Vector2(480f, (float)font.LineSpacing + entry2.Position.Y));
-			test.Selected += new EventHandler<MenuEventArgs>(test_Selected);
-			//MenuEntries.Add(test);
 		}
 		#endregion
 
@@ -50,12 +46,6 @@ namespace Graphics.GameScreens
 		private void ExitApp_Selected(object sender, MenuEventArgs args)
 		{
 			VolumetricRenderer.Game.Exit();
-		}
-
-		private void test_Selected(object sender, MenuEventArgs args)
-		{
-			Debug.Assert(false, "false", "Here's where you can give extra info about the assert. "
-				+ "A callstack of the assert is also outputted to the file assert.txt in the bin folder.");
 		}
 		#endregion
 
