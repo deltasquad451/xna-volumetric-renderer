@@ -34,9 +34,7 @@ namespace Graphics.Diagnostics
 		#endregion
 
 		#region Fields
-		private DebugEventArgs args;
 		private List<AssertText> assertText;
-
 		private Color flashColor;
 		private TimeSpan flashRate;
 		private int flashDir;
@@ -47,8 +45,6 @@ namespace Graphics.Diagnostics
 		public AssertScreen(DebugEventArgs args)
 			: base()
 		{
-			this.args = args;
-
 			assertText = new List<AssertText>();
 
 			int width = VolumetricRenderer.Game.GraphicsDevice.PresentationParameters.BackBufferWidth;
@@ -57,15 +53,19 @@ namespace Graphics.Diagnostics
 			// Set up all the text to be drawn.
 			float yPos = 0;
 			PlaceAssertText("ASSERT:", ref yPos, ref fontEx, width);
-			PlaceAssertText((args.Condition == "" ? "(unavailable)" : args.Condition), ref yPos, ref fontEx, width);
-
-			if (args.Message != "")
+			
+			if (args.Messages.Length > 0)
+				for (int i = 0; i < args.Messages.Length; ++i)
+				{
+					PlaceAssertText(args.Messages[i], ref yPos, ref fontEx, width);
+					yPos += fontEx.font.LineSpacing;
+				}
+			else
 			{
+				PlaceAssertText("(no info)", ref yPos, ref fontEx, width);
 				yPos += fontEx.font.LineSpacing;
-				PlaceAssertText(args.Message, ref yPos, ref fontEx, width);
 			}
 
-			yPos += fontEx.font.LineSpacing;
 			PlaceAssertText("IN:", ref yPos, ref fontEx, width);
 			PlaceAssertText(args.MethodName, ref yPos, ref fontEx, width);
 			PlaceAssertText(args.FileName + ": line " + args.LineNumber, ref yPos, ref fontEx, width);
@@ -75,9 +75,9 @@ namespace Graphics.Diagnostics
 
 			// Shift all the text down a bit so it's not right at the top of the screen.
 			int height = VolumetricRenderer.Game.GraphicsDevice.PresentationParameters.BackBufferHeight;
-			float yOffset = (height - (fontEx.font.LineSpacing * (assertText.Count + 4))) / 3f;
-			if (yOffset < 5f)
-				yOffset = 5f;
+			int yOffset = (height - (fontEx.font.LineSpacing * (assertText.Count + 4))) / 3;
+			if (yOffset < 5)
+				yOffset = 5;
 
 			for (int i = 0; i < assertText.Count; ++i)
 			{

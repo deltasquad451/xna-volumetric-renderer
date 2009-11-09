@@ -95,7 +95,7 @@ namespace Engine.Utility
 
 				// Set the penalty for a single word on a line.
 				leftover = areaWidth - (parsedText[i].Length * fontWidth);
-				Debug.Assert(leftover >= 0, "", "A single word is too large to fit within the area given.");
+				Debug.Assert(leftover >= 0, "A single word is too large to fit within the area given.");
 				penalty[partialIndex + i] = leftover;
 
 				int j;
