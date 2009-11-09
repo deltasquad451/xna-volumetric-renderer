@@ -42,8 +42,6 @@ namespace Graphics
 		private UpdateMethod updateMethod;
 		private DrawMethod drawMethod;
 		private bool assertHandled;
-
-		public MenuScreen backgroundScreen; // temp hack
 		#endregion
 
         #region Properties
@@ -120,8 +118,7 @@ namespace Graphics
 			base.Initialize();
 
 			MenuScreen.LoadSharedContent();
-			backgroundScreen = new BackgroundScreen();
-			screenManager.AddScreen(backgroundScreen);
+			screenManager.AddScreen(new BackgroundScreen());
 			screenManager.AddScreen(new MainMenuScreen());
 		}
 
@@ -202,6 +199,8 @@ namespace Graphics
 		/// </summary>
 		private void Draw_Normal(GameTime gameTime)
 		{
+			GraphicsDevice.Clear(Color.Black);
+
 			lock (drawLock)
 			{
 				Monitor.Pulse(drawLock);
