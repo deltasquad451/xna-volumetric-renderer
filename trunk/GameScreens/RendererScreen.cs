@@ -22,14 +22,17 @@ namespace Graphics.GameScreens
 		#region Fields
 		private ContentManager rendererContent;
 		private Texture2D background;
+
 		private SpriteFont font;
 		private SpriteBatch spriteBatch;
-
-		private Texture3D teapot;
+        private VolumetricModel volumetricModel;
 		#endregion
 
-		#region Initialization
-		public RendererScreen()
+        #region Properties
+        #endregion
+
+        #region Initialization
+        public RendererScreen()
 			: base()
 		{
 			TransitionOnTime = TimeSpan.FromSeconds(0.25);
@@ -44,14 +47,7 @@ namespace Graphics.GameScreens
 			font = rendererContent.Load<SpriteFont>("menufont");
 			spriteBatch = new SpriteBatch(ScreenManager.GraphicsDevice);
 
-			// Load the teapot volume data.
-			teapot = new Texture3D(ScreenManager.GraphicsDevice, 256, 256, 178, 0, TextureUsage.Linear, SurfaceFormat.Single);
-			Engine.Input.RawFileReader rawFileReader = new Engine.Input.RawFileReader();
-			rawFileReader.Open("..\\..\\..\\BostonTeapot.raw");
-			rawFileReader.GetRawData(teapot);
-			rawFileReader.Close();
-
-			ScreenManager.Game.ResetElapsedTime();
+            volumetricModel = new VolumetricModel();
 		}
 
 		public override void UnloadContent()
@@ -65,6 +61,11 @@ namespace Graphics.GameScreens
 		#region Update
 		public override void Update(GameTime gameTime, bool hasFocus, bool isObscured)
 		{
+            if (hasFocus && !isObscured)
+            {
+                volumetricModel.Update(gameTime);
+            }
+
 			base.Update(gameTime, hasFocus, isObscured);
 		}
 
@@ -82,18 +83,20 @@ namespace Graphics.GameScreens
 		}
 		#endregion
 
-		#region Draw
-		public override void Draw(GameTime gameTime)
+        #region Draw
+        public override void Draw(GameTime gameTime)
 		{
-			Viewport viewport = ScreenManager.GraphicsDevice.Viewport;
-			Rectangle fullscreen = new Rectangle(0, 0, viewport.Width, viewport.Height);
-			byte alpha = TransitionAlpha;
+//			Viewport viewport = ScreenManager.GraphicsDevice.Viewport;
+//          Rectangle fullscreen = new Rectangle(0, 0, viewport.Width, viewport.Height);
+//			byte alpha = TransitionAlpha;
 
-			spriteBatch.Begin();
-			spriteBatch.Draw(background, fullscreen, new Color(alpha, alpha, alpha));
-			spriteBatch.DrawString(font, "Here's where our awesome renderer will be showcased!", new Vector2(250f, 450f), new Color(Color.White, alpha));
-			spriteBatch.DrawString(font, "ESC - Exit Renderer", new Vector2(10f, 915f), new Color(Color.Yellow, alpha));
-			spriteBatch.End();
+//			spriteBatch.Begin();
+//			spriteBatch.Draw(background, fullscreen, new Color(alpha, alpha, alpha));
+//			spriteBatch.DrawString(font, "Here's where our awesome renderer will be showcased!", new Vector2(250f, 450f), new Color(Color.White, alpha));
+//			spriteBatch.DrawString(font, "ESC - Exit Renderer", new Vector2(10f, 915f), new Color(Color.Yellow, alpha));
+//			spriteBatch.End();
+
+            volumetricModel.Draw(gameTime);
 
 			base.Draw(gameTime);
 		}
