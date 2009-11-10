@@ -86,7 +86,7 @@ namespace Graphics
 		/// <summary>
 		/// Draws a translucent black fullscreen sprite, used for darkening the background.
 		/// </summary>
-		public virtual void FadeBackBufferToBlack(byte alpha)
+		public void FadeBackBufferToBlack(byte alpha)
 		{
 			Viewport viewport = GraphicsDevice.Viewport;
 

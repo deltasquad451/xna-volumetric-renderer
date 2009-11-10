@@ -166,7 +166,7 @@ namespace Graphics.Diagnostics
 			base.HandleInput(input);
 
 			if (input.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.Enter, PlayerIndex.One))
-				VolumetricRenderer.Game.Exit();
+				ScreenManager.Game.Exit();
 		}
 		#endregion
 
