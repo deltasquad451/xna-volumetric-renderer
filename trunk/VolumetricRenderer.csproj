@@ -85,17 +85,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Diagnostics\AssertScreen.cs" />
-    <Compile Include="Engine\Camera\Camera.cs" />
+    <Compile Include="Engine\Graphics\Camera\Camera.cs" />
     <Compile Include="Engine\Diagnostics\Debug.cs" />
     <Compile Include="Engine\Input\InputState.cs" />
     <Compile Include="Engine\Input\RawFileReader.cs" />
-    <Compile Include="Engine\Screen\GameScreen.cs" />
-    <Compile Include="Engine\Screen\MenuEntry.cs" />
-    <Compile Include="Engine\Screen\MenuScreen.cs" />
-    <Compile Include="Engine\Screen\ScreenManager.cs" />
+    <Compile Include="Engine\Graphics\Screen\GameScreen.cs" />
+    <Compile Include="Engine\Graphics\Screen\MenuEntry.cs" />
+    <Compile Include="Engine\Graphics\Screen\MenuScreen.cs" />
+    <Compile Include="Engine\Graphics\Screen\ScreenManager.cs" />
     <Compile Include="Engine\Utility\Text.cs" />
     <Compile Include="Engine\Utility\Time.cs" />
-    <Compile Include="Engine\VolumetricModel.cs" />
+    <Compile Include="Engine\Graphics\VolumetricModel.cs" />
     <Compile Include="GameScreens\BackgroundScreen.cs" />
     <Compile Include="GameScreens\MainMenuScreen.cs" />
     <Compile Include="GameScreens\MenuEntry.cs" />
