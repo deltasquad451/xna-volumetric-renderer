@@ -45,7 +45,7 @@ namespace Graphics.GameScreens
 
 		private void ExitApp_Selected(object sender, MenuEventArgs args)
 		{
-			VolumetricRenderer.Game.Exit();
+			ScreenManager.Game.Exit();
 		}
 		#endregion
 

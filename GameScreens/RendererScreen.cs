@@ -24,6 +24,8 @@ namespace Graphics.GameScreens
 		private Texture2D background;
 		private SpriteFont font;
 		private SpriteBatch spriteBatch;
+
+		private Texture3D teapot;
 		#endregion
 
 		#region Initialization
@@ -37,10 +39,19 @@ namespace Graphics.GameScreens
 		{
 			base.LoadContent();
 
-			rendererContent = new ContentManager(VolumetricRenderer.Game.Services, "Content\\GameScreens");
+			rendererContent = new ContentManager(ScreenManager.Game.Services, "Content\\GameScreens");
 			background = rendererContent.Load<Texture2D>("renderer");
 			font = rendererContent.Load<SpriteFont>("menufont");
 			spriteBatch = new SpriteBatch(ScreenManager.GraphicsDevice);
+
+			// Load the teapot volume data.
+			teapot = new Texture3D(ScreenManager.GraphicsDevice, 256, 256, 178, 0, TextureUsage.Linear, SurfaceFormat.Single);
+			Engine.Input.RawFileReader rawFileReader = new Engine.Input.RawFileReader();
+			rawFileReader.Open("..\\..\\..\\BostonTeapot.raw");
+			rawFileReader.GetRawData(teapot);
+			rawFileReader.Close();
+
+			ScreenManager.Game.ResetElapsedTime();
 		}
 
 		public override void UnloadContent()
