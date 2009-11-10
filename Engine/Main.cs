@@ -11,6 +11,7 @@ using System;
 using System.Threading;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Engine.Camera;
 using Engine.Diagnostics;
 using Engine.Input;
 using Graphics.Diagnostics;
@@ -31,6 +32,7 @@ namespace Graphics
 		private GraphicsDeviceManager graphicsDM;
 		private ScreenManager screenManager;
 		private InputState input;
+        private Camera camera;
 
 		private volatile GameTime gameTime;
 		private Thread mainThread;
@@ -71,6 +73,14 @@ namespace Graphics
 			get
 			{ return input; }
 		}
+
+        /// <summary>
+        /// Gets the Camera instance for this screen.
+        /// </summary>
+        public Camera Camera
+        {
+            get { return camera; }
+        }
 		#endregion
 
 		#region Initialization
@@ -105,6 +115,9 @@ namespace Graphics
 			graphicsDM = new GraphicsDeviceManager(this);
 			graphicsDM.PreferredBackBufferWidth = 1280;
 			graphicsDM.PreferredBackBufferHeight = 960;
+            graphicsDM.PreferMultiSampling = false;
+            graphicsDM.SynchronizeWithVerticalRetrace = false;
+            graphicsDM.IsFullScreen = false;
 
 			input = new InputState();
 			screenManager = new ScreenManager(this, input);
@@ -120,6 +133,8 @@ namespace Graphics
 			MenuScreen.LoadSharedContent();
 			screenManager.AddScreen(new BackgroundScreen());
 			screenManager.AddScreen(new MainMenuScreen());
+
+            camera = new Camera(graphicsDM.GraphicsDevice.Viewport);
 		}
 
 		protected override void UnloadContent()
@@ -135,6 +150,7 @@ namespace Graphics
 		{
 			this.gameTime = gameTime;
 			input.Update();
+            camera.Update();
 
 			updateMethod(gameTime);
 		}
