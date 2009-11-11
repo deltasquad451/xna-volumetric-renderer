@@ -11,10 +11,10 @@
 #region Using Statements
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using Engine.Diagnostics;
+using Renderer.Diagnostics;
 #endregion
 
-namespace Engine.Input
+namespace Renderer.Input
 {
 	#region Enums
 	public enum MouseButtons
@@ -26,31 +26,6 @@ namespace Engine.Input
 		XButton2
 	}
 	#endregion
-
-	public interface IInputState
-	{
-		Vector2 MousePosition { get; }
-		int ScrollWheelValue { get; }
-
-		void Update();
-
-		bool IsKeyDown(Keys key, PlayerIndex? playerIndex);
-		bool IsKeyPressed(Keys key, PlayerIndex? playerIndex);
-		bool IsKeyHeld(Keys key, PlayerIndex? playerIndex);
-		bool IsKeyReleased(Keys key, PlayerIndex? playerIndex);
-
-		bool IsButtonDown(Buttons button, PlayerIndex? playerIndex);
-		bool IsButtonPressed(Buttons button, PlayerIndex? playerIndex);
-		bool IsButtonHeld(Buttons button, PlayerIndex? playerIndex);
-		bool IsButtonReleased(Buttons button, PlayerIndex? playerIndex);
-		float TriggerValue(Buttons trigger, PlayerIndex playerIndex);
-		Vector2 ThumbstickValue(Buttons thumbstick, PlayerIndex playerIndex);
-
-		bool IsMouseBtnDown(MouseButtons button);
-		bool IsMouseBtnPressed(MouseButtons button);
-		bool IsMouseBtnHeld(MouseButtons button);
-		bool IsMouseBtnReleased(MouseButtons button);
-	}
 
 	/// <summary>
 	/// Holds the current and previous states of the input devices.
@@ -534,6 +509,35 @@ namespace Engine.Input
 					Debug.Assert(false);
 					return false;
 			}
+		}
+		#endregion
+
+		#region Menu Methods
+		/// <summary>
+		/// Returns whether or not the MenuUp command was invoked.
+		/// </summary>
+		/// <returns>True if the MenuUp command was invoked, false otherwise.</returns>
+		public bool MenuUp()
+		{
+			return IsKeyPressed(Keys.Up, PlayerIndex.One);
+		}
+
+		/// <summary>
+		/// Returns whether or not the MenuDown command was invoked.
+		/// </summary>
+		/// <returns>True if the MenuDown command was invoked, false otherwise.</returns>
+		public bool MenuDown()
+		{
+			return IsKeyPressed(Keys.Down, PlayerIndex.One);
+		}
+
+		/// <summary>
+		/// Returns whether or not the MenuSelect command was invoked.
+		/// </summary>
+		/// <returns>True if the MenuSelect command was invoked, false otherwise.</returns>
+		public bool MenuSelect()
+		{
+			return IsKeyPressed(Keys.Enter, PlayerIndex.One);
 		}
 		#endregion
 	}

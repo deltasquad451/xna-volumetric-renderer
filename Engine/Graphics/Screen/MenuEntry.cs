@@ -10,16 +10,15 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Engine.Diagnostics;
+using Renderer.Diagnostics;
 #endregion
 
-namespace Engine.Screen
+namespace Renderer.Graphics.Screen
 {
 	/// <summary>
-	/// A single entry in a MenuScreen instance. 'T' must be of type EventArgs, or a derivation thereof,
-	/// which represents the arguments passed to the event handlers.
+	/// A single entry in a MenuScreen instance.
 	/// </summary>
-	public class MenuEntry<T> where T : EventArgs
+	public class MenuEntry
 	{
 		#region Fields
 		private string text;
@@ -78,12 +77,12 @@ namespace Engine.Screen
 		#endregion
 
 		#region Events
-		public event EventHandler<T> Selected;
+		public event EventHandler<MenuEventArgs> Selected;
 
 		/// <summary>
 		/// Raises the Selected event.
 		/// </summary>
-		public virtual void OnSelectEntry(T args)
+		public virtual void OnSelectEntry(MenuEventArgs args)
 		{
 			Debug.Assert(args != null);
 
@@ -95,7 +94,7 @@ namespace Engine.Screen
 		#region Update
 		/// <param name="menuScreen">The menu screen instance this entry belongs to.</param>
 		/// <param name="isHighlighted">Indicates if this entry is currently highlighted.</param>
-		public virtual void Update(GameTime gameTime, MenuScreen<T> menuScreen, bool isHighlighted) { }
+		public virtual void Update(GameTime gameTime, MenuScreen menuScreen, bool isHighlighted) { }
 		#endregion
 
 		#region Draw
@@ -104,7 +103,7 @@ namespace Engine.Screen
 		/// </summary>
 		/// <param name="menuScreen">The menu screen instance this entry belongs to.</param>
 		/// <param name="isHighlighted">Indicates if this entry is currently highlighted.</param>
-		public virtual void Draw(GameTime gameTime, MenuScreen<T> menuScreen, bool isHighlighted)
+		public virtual void Draw(GameTime gameTime, MenuScreen menuScreen, bool isHighlighted)
 		{
 			Color color = (isHighlighted ? Color.Yellow : Color.White);
 			color.A = menuScreen.TransitionAlpha;

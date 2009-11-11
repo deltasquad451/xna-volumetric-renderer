@@ -1,8 +1,9 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Renderer.Input;
 
-namespace Graphics
+namespace Renderer.Graphics
 {
     class VolumetricModel
     {
@@ -33,7 +34,7 @@ namespace Graphics
             // For now, just initialize this to teapot volume values
             volumeTexture = new Texture3D(VolumetricRenderer.Game.GraphicsDevice, 256, 256, 178, 0,
                                     TextureUsage.Linear, SurfaceFormat.Single);
-            Engine.Input.RawFileReader tempFileReader = new Engine.Input.RawFileReader();
+            RawFileReader tempFileReader = new RawFileReader();
             tempFileReader.Open("..\\..\\..\\BostonTeapot.raw");
             tempFileReader.GetRawData(volumeTexture);
             tempFileReader.Close();

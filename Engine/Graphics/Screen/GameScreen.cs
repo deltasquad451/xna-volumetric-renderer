@@ -10,12 +10,12 @@
 #region Using Statements
 using System;
 using Microsoft.Xna.Framework;
-using Engine.Diagnostics;
-using Engine.Input;
-using Engine.Utility;
+using Renderer.Diagnostics;
+using Renderer.Input;
+using Renderer.Utility;
 #endregion
 
-namespace Engine.Screen
+namespace Renderer.Graphics.Screen
 {
 	#region Enums
 	/// <summary>

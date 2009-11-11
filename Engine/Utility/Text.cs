@@ -10,10 +10,10 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Engine.Diagnostics;
+using Renderer.Diagnostics;
 #endregion
 
-namespace Engine.Utility
+namespace Renderer.Utility
 {
 	#region Structs
 	/// <summary>

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.IO;
 
-using Engine.Diagnostics;
-
 using Microsoft.Xna.Framework.Graphics;
+
+using Renderer.Diagnostics;
 
 /*
  * Example of how to use this:
@@ -18,7 +18,7 @@ using Microsoft.Xna.Framework.Graphics;
  * tempFileReader.Close();
  */
 
-namespace Engine.Input
+namespace Renderer.Input
 {
     class RawFileReader
     {
@@ -45,8 +45,7 @@ namespace Engine.Input
         #region Methods
         public void Open(String filename)
         {
-            Engine.Diagnostics.Debug.Assert(File.Exists(filename), 
-                            String.Format("Unabled to locate file {0}\\{1}", System.Environment.CurrentDirectory, filename));
+            Debug.Assert(File.Exists(filename), String.Format("Unabled to locate file {0}\\{1}", System.Environment.CurrentDirectory, filename));
             fileStream = new FileStream(filename, FileMode.Open);
         }
 
@@ -57,7 +56,7 @@ namespace Engine.Input
 
         public void GetRawData(Texture3D texture3D)
         {
-            Engine.Diagnostics.Debug.Assert(fileStream.CanRead, "Cannot read from file stream\n");
+            Debug.Assert(fileStream.CanRead, "Cannot read from file stream\n");
 
             BinaryReader binaryReader = new BinaryReader(fileStream);
             float[] scaledValues;

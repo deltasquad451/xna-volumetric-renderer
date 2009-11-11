@@ -15,7 +15,7 @@ using System.IO;
 using Microsoft.Xna.Framework;
 #endregion
 
-namespace Engine.Diagnostics
+namespace Renderer.Diagnostics
 {
 	public delegate void DebugMethodDelegate();
 	public delegate void ParamDebugMethodDelegate(params object[] args);

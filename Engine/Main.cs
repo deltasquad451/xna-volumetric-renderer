@@ -11,14 +11,13 @@ using System;
 using System.Threading;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Engine.Camera;
-using Engine.Diagnostics;
-using Engine.Input;
-using Graphics.Diagnostics;
-using Graphics.GameScreens;
+using Renderer.Diagnostics;
+using Renderer.Graphics.Camera;
+using Renderer.Graphics.Screen;
+using Renderer.Input;
 #endregion
 
-namespace Graphics
+namespace Renderer
 {
     /// <summary>
 	/// Base class for the game.
@@ -79,7 +78,8 @@ namespace Graphics
         /// </summary>
         public Camera Camera
         {
-            get { return camera; }
+            get
+			{ return camera; }
         }
 		#endregion
 

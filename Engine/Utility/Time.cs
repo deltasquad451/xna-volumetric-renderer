@@ -9,10 +9,10 @@
 #region Using Statements
 using System;
 using Microsoft.Xna.Framework;
-using Engine.Diagnostics;
+using Renderer.Diagnostics;
 #endregion
 
-namespace Engine.Utility
+namespace Renderer.Utility
 {
 	/// <summary>
 	/// Static class containing helper functions having to do with time conversions.
