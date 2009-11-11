@@ -11,13 +11,13 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Engine.Diagnostics;
-using Graphics.Diagnostics;
+using Renderer.Diagnostics;
+using Renderer.Input;
 #endregion
 
-namespace Graphics.GameScreens
+namespace Renderer.Graphics.Screen
 {
-	public class RendererScreen : Engine.Screen.GameScreen
+	public class RendererScreen : GameScreen
 	{
 		#region Fields
 		private ContentManager rendererContent;
@@ -69,7 +69,7 @@ namespace Graphics.GameScreens
 			base.Update(gameTime, hasFocus, isObscured);
 		}
 
-		public override void HandleInput(Engine.Input.InputState input)
+		public override void HandleInput(InputState input)
 		{
 			base.HandleInput(input);
 

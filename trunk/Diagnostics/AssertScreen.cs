@@ -11,16 +11,17 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Engine.Diagnostics;
-using Engine.Utility;
+using Renderer.Diagnostics;
+using Renderer.Input;
+using Renderer.Utility;
 #endregion
 
-namespace Graphics.Diagnostics
+namespace Renderer.Graphics.Screen
 {
 	/// <summary>
 	/// Debug screen that displays an assert.
 	/// </summary>
-	public class AssertScreen : Engine.Screen.GameScreen
+	public class AssertScreen : GameScreen
 	{
 		#region Structs
 		/// <summary>
@@ -161,7 +162,7 @@ namespace Graphics.Diagnostics
 			flashColor.B = (byte)val;
 		}
 
-		public override void HandleInput(Engine.Input.InputState input)
+		public override void HandleInput(InputState input)
 		{
 			base.HandleInput(input);
 
@@ -175,17 +176,15 @@ namespace Graphics.Diagnostics
 		{
 			base.Draw(gameTime);
 
-			global::Graphics.ScreenManager screenManager = (global::Graphics.ScreenManager)ScreenManager;
-
-			screenManager.GraphicsDevice.Clear(Color.Black);
-			screenManager.SpriteBatch.Begin();
+			ScreenManager.GraphicsDevice.Clear(Color.Black);
+			ScreenManager.SpriteBatch.Begin();
 
 			int i;
 			for (i = 0; i < assertText.Count - 1; ++i)
-				screenManager.SpriteBatch.DrawString(screenManager.DefaultFontEx.font, assertText[i].text, assertText[i].position, Color.White);
+				ScreenManager.SpriteBatch.DrawString(ScreenManager.DefaultFontEx.font, assertText[i].text, assertText[i].position, Color.White);
 
-			screenManager.SpriteBatch.DrawString(screenManager.DefaultFontEx.font, assertText[i].text, assertText[i].position, flashColor);
-			screenManager.SpriteBatch.End();
+			ScreenManager.SpriteBatch.DrawString(ScreenManager.DefaultFontEx.font, assertText[i].text, assertText[i].position, flashColor);
+			ScreenManager.SpriteBatch.End();
 		}
 		#endregion
 	}

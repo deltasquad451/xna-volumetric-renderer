@@ -10,11 +10,10 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Engine.Diagnostics;
-using Graphics.Diagnostics;
+using Renderer.Diagnostics;
 #endregion
 
-namespace Graphics.GameScreens
+namespace Renderer.Graphics.Screen
 {
     /// <summary>
     /// The background screen sits behind all the other menu screens.
@@ -27,7 +26,7 @@ namespace Graphics.GameScreens
 
         #region Initialization
         public BackgroundScreen()
-			: base()
+			: base(VolumetricRenderer.Game.ScreenManager.SpriteBatch)
         {
 			TransitionOnTime = TimeSpan.FromSeconds(0.25);
 			AlwaysVisible = true;

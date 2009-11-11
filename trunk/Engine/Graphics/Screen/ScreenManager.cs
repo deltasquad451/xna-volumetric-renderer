@@ -9,11 +9,14 @@
 #region Using Statements
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Engine.Diagnostics;
-using Engine.Input;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
+using Renderer.Diagnostics;
+using Renderer.Input;
+using Renderer.Utility;
 #endregion
 
-namespace Engine.Screen
+namespace Renderer.Graphics.Screen
 {
     /// <summary>
 	/// Manager for GameScreen instances.
@@ -21,21 +24,44 @@ namespace Engine.Screen
     public class ScreenManager : DrawableGameComponent
     {
         #region Fields
+		private ContentManager content;
+		private Texture2D blank;
+		private SpriteFontEx defaultFontEx;
+		private SpriteBatch spriteBatch;
+		private InputState input;
+
 		// The screens are maintained as a list so that Update can process the screens top-down
 		// and Draw can process them bottom-up.
 		private List<GameScreen> screens;
 		private List<GameScreen> screensToUpdate;
-		private InputState input;
         #endregion
 
         #region Properties
 		/// <summary>
-		/// Gets the list of current GameScreen instances.
+		/// Gets the content manager for this ScreenManager object.
 		/// </summary>
-		protected List<GameScreen> Screens
+		public ContentManager Content
 		{
 			get
-			{ return screens; }
+			{ return content; }
+		}
+
+		/// <summary>
+		/// Gets the default font data shared among all screens.
+		/// </summary>
+		public SpriteFontEx DefaultFontEx
+		{
+			get
+			{ return defaultFontEx; }
+		}
+
+		/// <summary>
+		/// Gets the SpriteBatch instance shared among all screens.
+		/// </summary>
+		public SpriteBatch SpriteBatch
+		{
+			get
+			{ return spriteBatch; }
 		}
 
 		/// <summary>
@@ -45,6 +71,15 @@ namespace Engine.Screen
 		{
 			get
 			{ return input; }
+		}
+
+		/// <summary>
+		/// Gets the list of current GameScreen instances.
+		/// </summary>
+		protected List<GameScreen> Screens
+		{
+			get
+			{ return screens; }
 		}
         #endregion
 
@@ -58,8 +93,21 @@ namespace Engine.Screen
 			this.input = input;
         }
 
+		protected override void LoadContent()
+		{
+			base.LoadContent();
+
+			content = new ContentManager(Game.Services, "Content");
+			blank = content.Load<Texture2D>("blank");
+			defaultFontEx.font = content.Load<SpriteFont>("defaultfont");
+			defaultFontEx.width = 11;
+			spriteBatch = new SpriteBatch(GraphicsDevice);
+		}
+
         protected override void UnloadContent()
         {
+			content.Unload();
+
             // Tell each of the screens to unload their content.
             foreach (GameScreen screen in screens)
                 screen.UnloadContent();
@@ -154,6 +202,18 @@ namespace Engine.Screen
 
 			screens.Clear();
 			screensToUpdate.Clear();
+		}
+
+		/// <summary>
+		/// Draws a translucent black fullscreen sprite, used for darkening the background.
+		/// </summary>
+		public void FadeBackBufferToBlack(byte alpha)
+		{
+			Viewport viewport = GraphicsDevice.Viewport;
+
+			spriteBatch.Begin();
+			spriteBatch.Draw(blank, new Rectangle(0, 0, viewport.Width, viewport.Height), new Color(0, 0, 0, alpha));
+			spriteBatch.End();
 		}
 
         /// <summary>
