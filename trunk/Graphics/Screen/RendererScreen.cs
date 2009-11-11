@@ -42,7 +42,7 @@ namespace Renderer.Graphics.Screen
 		{
 			base.LoadContent();
 
-			rendererContent = new ContentManager(ScreenManager.Game.Services, "Content\\GameScreens");
+			rendererContent = new ContentManager(ScreenManager.Game.Services, "Content\\Screen");
 			background = rendererContent.Load<Texture2D>("renderer");
 			font = rendererContent.Load<SpriteFont>("menufont");
 			spriteBatch = new SpriteBatch(ScreenManager.GraphicsDevice);
