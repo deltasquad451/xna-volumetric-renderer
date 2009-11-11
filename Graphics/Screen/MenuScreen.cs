@@ -8,15 +8,16 @@
 
 #region Using Statements
 using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Engine.Diagnostics;
-using Engine.Utility;
-using Graphics.Diagnostics;
+using Renderer.Diagnostics;
+using Renderer.Input;
+using Renderer.Utility;
 #endregion
 
-namespace Graphics.GameScreens
+namespace Renderer.Graphics.Screen
 {
 	/// <summary>
 	/// Argument class used by MenuScreen and MenuEntry for events.
@@ -32,16 +33,19 @@ namespace Graphics.GameScreens
 	}
 
 	/// <summary>
-	/// Base class for screens that contain a menu of options. This screen and instances of 
-	/// MenuEntry used by this screen use type MenuEventArgs for 'T'.
+	/// Base class for screens that contain a menu of options. 'T' must be of type EventArgs, or a 
+	/// derivation thereof, which represents the arguments passed to the event handlers of MenuEntry
+	/// instances used in this menu.
 	/// </summary>
-	public class MenuScreen : Engine.Screen.MenuScreen<MenuEventArgs>
+	public abstract class MenuScreen : GameScreen
 	{
 		#region Fields
 		private static ContentManager menuContent;
 		private static SpriteFontEx menuFontEx;
 		private static bool contentLoaded = false;
 
+		private SpriteBatch spriteBatch;
+		private List<MenuEntry> menuEntries;
 		private int highlightedEntry;
 		#endregion
 
@@ -65,12 +69,21 @@ namespace Graphics.GameScreens
 		}
 
 		/// <summary>
-		/// Gets the derived screen manager used by the game.
+		/// Gets the SpriteBatch used by this menu screen.
 		/// </summary>
-		protected ScreenManager ScreenManager_thisGame
+		public SpriteBatch SpriteBatch
 		{
 			get
-			{ return (global::Graphics.ScreenManager)ScreenManager; }
+			{ return spriteBatch; }
+		}
+
+		/// <summary>
+		/// Gets the list of menu entries.
+		/// </summary>
+		public List<MenuEntry> MenuEntries
+		{
+			get
+			{ return menuEntries; }
 		}
 
 		/// <summary>
@@ -85,11 +98,31 @@ namespace Graphics.GameScreens
 
 		#region Initialization
 		public MenuScreen()
-			: base(VolumetricRenderer.Game.ScreenManager.SpriteBatch)
+			: base()
 		{
 			Debug.Assert(contentLoaded);
 
+			menuEntries = new List<MenuEntry>();
 			highlightedEntry = 0;
+		}
+
+		/// <param name="spriteBatch">The SpriteBatch instance this menu screen will use.</param>
+		public MenuScreen(SpriteBatch spriteBatch)
+			: base()
+		{
+			Debug.Assert(contentLoaded);
+
+			this.spriteBatch = spriteBatch;
+			menuEntries = new List<MenuEntry>();
+			highlightedEntry = 0;
+		}
+
+		public override void LoadContent()
+		{
+			base.LoadContent();
+
+			if (spriteBatch == null)
+				spriteBatch = new SpriteBatch(ScreenManager.GraphicsDevice);
 		}
 
 		/// <summary>
@@ -100,7 +133,7 @@ namespace Graphics.GameScreens
 		{
 			Debug.Assert(!contentLoaded);
 
-			menuContent = new ContentManager(VolumetricRenderer.Game.Services, "Content\\GameScreens");
+			menuContent = new ContentManager(VolumetricRenderer.Game.Services, "Content\\Screen");
 			menuFontEx.font = menuContent.Load<SpriteFont>("menufont");
 			menuFontEx.width = 0; // Not a fixed-width font.
 			contentLoaded = true;
@@ -126,30 +159,28 @@ namespace Graphics.GameScreens
 		{
 			base.Update(gameTime, hasFocus, isObscured);
 
-			for (int i = 0; i < MenuEntries.Count; ++i)
-				MenuEntries[i].Update(gameTime, this, (i == highlightedEntry ? true : false));
+			for (int i = 0; i < menuEntries.Count; ++i)
+				menuEntries[i].Update(gameTime, this, (i == highlightedEntry ? true : false));
 		}
 
 		/// <summary>
 		/// Handler for the input to this screen. This is called only when this screen has focus.
 		/// </summary>
 		/// <param name="input">The InputState instance to read input from.</param>
-		public override void HandleInput(Engine.Input.InputState input)
+		public override void HandleInput(InputState input)
 		{
 			base.HandleInput(input);
 
-			InputState _input = input as InputState;
-
-			if (_input.MenuUp())
+			if (input.MenuUp())
 				if (--highlightedEntry < 0)
-					highlightedEntry = MenuEntries.Count - 1;
+					highlightedEntry = menuEntries.Count - 1;
 
-			if (_input.MenuDown())
-				if (++highlightedEntry > MenuEntries.Count - 1)
+			if (input.MenuDown())
+				if (++highlightedEntry > menuEntries.Count - 1)
 					highlightedEntry = 0;
 
-			if (_input.MenuSelect())
-				MenuEntries[highlightedEntry].OnSelectEntry(new MenuEventArgs(highlightedEntry));
+			if (input.MenuSelect())
+				menuEntries[highlightedEntry].OnSelectEntry(new MenuEventArgs(highlightedEntry));
 		}
 		#endregion
 
@@ -158,8 +189,8 @@ namespace Graphics.GameScreens
 		{
 			base.Draw(gameTime);
 
-			for (int i = 0; i < MenuEntries.Count; ++i)
-				MenuEntries[i].Draw(gameTime, this, (i == highlightedEntry ? true : false));
+			for (int i = 0; i < menuEntries.Count; ++i)
+				menuEntries[i].Draw(gameTime, this, (i == highlightedEntry ? true : false));
 		}
 		#endregion
 	}

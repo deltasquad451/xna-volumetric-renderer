@@ -97,7 +97,7 @@ namespace Renderer.Graphics.Screen
 		{
 			base.LoadContent();
 
-			content = new ContentManager(Game.Services, "Content");
+			content = new ContentManager(Game.Services, "Content\\Screen");
 			blank = content.Load<Texture2D>("blank");
 			defaultFontEx.font = content.Load<SpriteFont>("defaultfont");
 			defaultFontEx.width = 11;
