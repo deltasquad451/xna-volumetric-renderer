@@ -2,7 +2,7 @@
 //-------------------------------------------------------------------------------------------------
 // RendererScreen.cs
 //
-// 
+// The GameScreen instance that does the actual volumetric modeling.
 //-------------------------------------------------------------------------------------------------
 #endregion
 
@@ -17,6 +17,9 @@ using Renderer.Input;
 
 namespace Renderer.Graphics.Screen
 {
+	/// <summary>
+	/// Does the actual volumetric modeling.
+	/// </summary>
 	public class RendererScreen : GameScreen
 	{
 		#region Fields
@@ -48,6 +51,18 @@ namespace Renderer.Graphics.Screen
 			spriteBatch = new SpriteBatch(ScreenManager.GraphicsDevice);
 
             volumetricModel = new VolumetricModel();
+
+			// TODO: Experimentally determine the real transfer points when the model is finally visible.
+			// Add the color transfer points.
+			volumetricModel.ColorPoints.Add(new TransferPoint(Color.Black, 0));		// TEMP
+			volumetricModel.ColorPoints.Add(new TransferPoint(Color.White, 255));	// TEMP
+
+			// TODO: Experimentally determine the real transfer points when the model is finally visible.
+			// Add the alpha transfer points.
+			volumetricModel.AlphaPoints.Add(new TransferPoint(0f, 0));				// TEMP
+			volumetricModel.AlphaPoints.Add(new TransferPoint(0.5f, 100));			// TEMP
+			volumetricModel.AlphaPoints.Add(new TransferPoint(0.8f, 200));			// TEMP
+			volumetricModel.AlphaPoints.Add(new TransferPoint(0f, 255));			// TEMP
 		}
 
 		public override void UnloadContent()

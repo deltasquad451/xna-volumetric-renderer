@@ -1,16 +1,33 @@
-﻿using System;
+﻿#region File Description
+//-------------------------------------------------------------------------------------------------
+// VolumetricModel.cs
+//
+// A 3D volumetric model constructed from voxel data.
+//-------------------------------------------------------------------------------------------------
+#endregion
+
+#region Using Statements
+using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Renderer.Input;
+#endregion
 
 namespace Renderer.Graphics
 {
+	/// <summary>
+	/// A 3D volumetric model constructed from voxel data.
+	/// </summary>
     class VolumetricModel
     {
         #region Fields
         private Texture3D volumeTexture;
         private VertexDeclaration vertexDecl; // TEMP
         private Effect effect; // TEMP
+
+		private List<TransferPoint> colorPoints;
+		private List<TransferPoint> alphaPoints;
         #endregion
 
         #region Properties
@@ -18,9 +35,27 @@ namespace Renderer.Graphics
         {
             get { return volumeTexture; }
         }
+
+		/// <summary>
+		/// Gets the list of color transfer points used by the transfer functions.
+		/// </summary>
+		public List<TransferPoint> ColorPoints
+		{
+			get
+			{ return colorPoints; }
+		}
+
+		/// <summary>
+		/// Gets the list of alpha transfer points used by the transfer functions.
+		/// </summary>
+		public List<TransferPoint> AlphaPoints
+		{
+			get
+			{ return alphaPoints; }
+		}
         #endregion
 
-        #region Methods
+        #region Initialization
         public VolumetricModel()
         {
             // TEMP
@@ -38,14 +73,21 @@ namespace Renderer.Graphics
             tempFileReader.Open("..\\..\\..\\BostonTeapot.raw");
             tempFileReader.GetRawData(volumeTexture);
             tempFileReader.Close();
-        }
 
-        public void Update(GameTime gameTime)
+			colorPoints = new List<TransferPoint>();
+			alphaPoints = new List<TransferPoint>();
+        }
+		#endregion
+
+		#region Update
+		public void Update(GameTime gameTime)
         {
             // TODO
         }
+		#endregion
 
-        public void Draw(GameTime gameTime)
+		#region Draw
+		public void Draw(GameTime gameTime)
         {
             // TEMP - draw a triangle to test the camera
             VolumetricRenderer.Game.GraphicsDevice.RenderState.CullMode = CullMode.None;
@@ -88,7 +130,6 @@ namespace Renderer.Graphics
             effect.End();
             // TEMP - end
         }
-
         #endregion
     }
 }
