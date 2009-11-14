@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
-
 using Microsoft.Xna.Framework.Graphics;
-
 using Renderer.Diagnostics;
 
 /*
@@ -75,7 +73,7 @@ namespace Renderer.Input
                 scaledValues = new float[dataBuffer.Length];
                 for (int i = 0; i < scaledValues.Length; ++i)
                 {
-                    scaledValues[i] /= ushort.MaxValue;
+					scaledValues[i] = dataBuffer[i] / ushort.MaxValue;
                 }
             }
             else
@@ -88,7 +86,7 @@ namespace Renderer.Input
                 scaledValues = new float[dataBuffer.Length];
                 for (int i = 0; i < scaledValues.Length; ++i)
                 {
-                    scaledValues[i] /= byte.MaxValue;
+                    scaledValues[i] = dataBuffer[i] / byte.MaxValue;
                 }
             }
             binaryReader.Close();

@@ -94,6 +94,7 @@
     <Compile Include="Graphics\Screen\MenuScreen.cs" />
     <Compile Include="Graphics\Screen\RendererScreen.cs" />
     <Compile Include="Graphics\Screen\ScreenManager.cs" />
+    <Compile Include="Graphics\Transfer.cs" />
     <Compile Include="Graphics\VolumetricModel.cs" />
     <Compile Include="Input\InputState.cs" />
     <Compile Include="Input\RawFileReader.cs" />
