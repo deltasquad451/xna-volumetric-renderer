@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Renderer.Diagnostics;
 using Renderer.Input;
 #endregion
 
@@ -28,6 +29,7 @@ namespace Renderer.Graphics
 
 		private List<TransferPoint> colorPoints;
 		private List<TransferPoint> alphaPoints;
+		private Color[] transferFunc;
         #endregion
 
         #region Properties
@@ -131,5 +133,15 @@ namespace Renderer.Graphics
             // TEMP - end
         }
         #endregion
-    }
+
+		#region Methods
+		/// <summary>
+		/// Creates a transfer function from volume's color and alpha transfer points.
+		/// </summary>
+		public void CreateTransferFunction()
+		{
+			transferFunc = Transfer.CreateTransferFunction(colorPoints, alphaPoints);
+		}
+		#endregion
+	}
 }
