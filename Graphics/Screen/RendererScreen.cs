@@ -63,6 +63,9 @@ namespace Renderer.Graphics.Screen
 			volumetricModel.AlphaPoints.Add(new TransferPoint(0.5f, 100));			// TEMP
 			volumetricModel.AlphaPoints.Add(new TransferPoint(0.8f, 200));			// TEMP
 			volumetricModel.AlphaPoints.Add(new TransferPoint(0f, 255));			// TEMP
+
+			// Create the transfer function.
+			volumetricModel.CreateTransferFunction();
 		}
 
 		public override void UnloadContent()
