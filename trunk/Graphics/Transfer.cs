@@ -84,6 +84,17 @@ namespace Renderer.Graphics
 		private Cubic[] cubics;
 		#endregion
 
+		#region Properties
+		/// <summary>
+		/// Gets the number of cubic equations that make up the spline.
+		/// </summary>
+		public int Count
+		{
+			get
+			{ return cubics.Length; }
+		}
+		#endregion
+
 		#region Methods
 		/// <summary>
 		/// Fits a cubic spline to the list of transfer control points.
@@ -129,7 +140,7 @@ namespace Renderer.Graphics
 			matrixCoef[numCubics, 2] = Vector4.Zero;
 			matrixCoef[numCubics, 3] = (transferPoints[numCubics].color - transferPoints[numCubics - 1].color) * 3;
 
-			// Modify the coefficients.
+			// Modify the coefficients (Thomas algorithm).
 			matrixCoef[0, 2] /= matrixCoef[0, 1];
 			matrixCoef[0, 3] /= matrixCoef[0, 1];
 
@@ -140,7 +151,7 @@ namespace Renderer.Graphics
 				matrixCoef[i, 3] = (matrixCoef[i, 3] - (matrixCoef[i - 1, 3] * matrixCoef[i, 0])) / val;
 			}
 
-			// Back substitute to solve for the derivaties.
+			// Back substitute to solve for the derivaties (Thomas algorithm).
 			Vector4[] derivatives = new Vector4[numCubics + 1];
 
 			derivatives[numCubics - 1] = matrixCoef[numCubics - 1, 3];
@@ -150,9 +161,29 @@ namespace Renderer.Graphics
 			// Use the derivatives to solve for the coefficients of the cubics.
 			cubics = new Cubic[numCubics];
 			for (int i = 0; i < numCubics; ++i)
-				cubics[i] = new Cubic(transferPoints[i].color, derivatives[i],
-					(3 * (transferPoints[i + 1].color - transferPoints[i].color)) - (2 * derivatives[i]) - derivatives[i + 1],
-					(2 * (transferPoints[i].color - transferPoints[i + 1].color)) + derivatives[i] + derivatives[i + 1]);
+			{
+				Vector4 a = transferPoints[i].color;
+				Vector4 b = derivatives[i];
+				Vector4 c = (3 * (transferPoints[i + 1].color - transferPoints[i].color)) - (2 * derivatives[i]) - derivatives[i + 1];
+				Vector4 d = (2 * (transferPoints[i].color - transferPoints[i + 1].color)) + derivatives[i] + derivatives[i + 1];
+				cubics[i] = new Cubic(a, b, c, d);
+			}
+		}
+
+		/// <summary>
+		/// Gets a point on the cubic spline.
+		/// </summary>
+		/// <param name="cubicNum">Cubic segment of interest.</param>
+		/// <param name="position">0-1 position on the cubic.</param>
+		/// <returns>Actual data point on the spline.</returns>
+		public Vector4 GetPointOnSpline(int cubicNum, float position)
+		{
+			Debug.Assert(cubicNum >= 0 && cubicNum <= cubics.Length);
+			Debug.Assert(position >= 0f && position <= 1f);
+
+			// a+t(b+t(c+dt)) is the same as a+bt+ct^2+dt^3, but has three less multiplications.
+			Cubic cubic = cubics[cubicNum];
+			return cubic.a + (position * (cubic.b + (position * (cubic.c + (position * cubic.d)))));
 		}
 		#endregion
 	}
@@ -173,6 +204,10 @@ namespace Renderer.Graphics
 		{
 			Debug.Assert(colorPoints.Count >= 2);
 			Debug.Assert(alphaPoints.Count >= 2);
+			Debug.Assert(colorPoints[0].isoValue == 0 && colorPoints[colorPoints.Count - 1].isoValue == 255, 
+				"The first and last isovalues must be 0 and 255, respectively.");
+			Debug.Assert(alphaPoints[0].isoValue == 0 && alphaPoints[alphaPoints.Count - 1].isoValue == 255, 
+				"The first and last isovalues must be 0 and 255, respectively.");
 
 			// Calculate the cubic splines for the color and alpha values.
 			CubicSpline colorSpline = new CubicSpline();
@@ -183,17 +218,37 @@ namespace Renderer.Graphics
 			// Create the transfer function from the two splines.
 			Color[] transferFunc = new Color[256];
 
+			// ...color portion.
 			int index = 0;
-			for (int i = 0; i < colorPoints.Count - 1; ++i)
+			for (int i = 0; i < colorSpline.Count; ++i)
 			{
 				int interval = colorPoints[i + 1].isoValue - colorPoints[i].isoValue;
-				Debug.Assert(interval - 1 > 0);
+				Debug.Assert(interval > 0, "Isovalues must be incremental by at least 1/increment.");
 
+				// Fill in the color at the isovalues covered by the current spline segment.
 				for (int j = 0; j < interval; ++j)
 				{
-					float point = j / (float)interval;
+					float position = j / (float)interval;
+					transferFunc[index++] = new Color(colorSpline.GetPointOnSpline(i, position));
 				}
 			}
+			transferFunc[index] = new Color(colorSpline.GetPointOnSpline(colorSpline.Count - 1, 1f));
+
+			// ...alpha portion.
+			index = 0;
+			for (int i = 0; i < alphaSpline.Count; ++i)
+			{
+				int interval = alphaPoints[i + 1].isoValue - alphaPoints[i].isoValue;
+				Debug.Assert(interval > 0, "Isovalues must be incremental by at least 1/increment.");
+
+				// Fill in the alpha at the isovalues covered by the current spline segment.
+				for (int j = 0; j < interval; ++j)
+				{
+					float position = j / (float)interval;
+					transferFunc[index++].A = new Color(alphaSpline.GetPointOnSpline(i, position)).A;
+				}
+			}
+			transferFunc[index].A = new Color(alphaSpline.GetPointOnSpline(alphaSpline.Count - 1, 1f)).A;
 
 			return transferFunc;
 		}
