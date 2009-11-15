@@ -141,6 +141,8 @@ namespace Renderer.Graphics
 		public void CreateTransferFunction()
 		{
 			transferFunc = Transfer.CreateTransferFunction(colorPoints, alphaPoints);
+
+			// TODO: Convert the color array into a texture for use in a shader?
 		}
 		#endregion
 	}

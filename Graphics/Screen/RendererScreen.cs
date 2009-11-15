@@ -55,6 +55,7 @@ namespace Renderer.Graphics.Screen
 			// TODO: Experimentally determine the real transfer points when the model is finally visible.
 			// Add the color transfer points.
 			volumetricModel.ColorPoints.Add(new TransferPoint(Color.Black, 0));		// TEMP
+			volumetricModel.ColorPoints.Add(new TransferPoint(Color.Aqua, 100));	// TEMP
 			volumetricModel.ColorPoints.Add(new TransferPoint(Color.White, 255));	// TEMP
 
 			// TODO: Experimentally determine the real transfer points when the model is finally visible.
