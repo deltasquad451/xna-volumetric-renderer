@@ -50,7 +50,7 @@ namespace Renderer.Graphics.Screen
 			font = rendererContent.Load<SpriteFont>("menufont");
 			spriteBatch = new SpriteBatch(ScreenManager.GraphicsDevice);
 
-            volumetricModel = new VolumetricModel();
+			volumetricModel = new VolumetricModel("..\\..\\..\\BostonTeapot.raw", 256, 256, 178);
 			volumetricModel.TransferPoints = new TransferControlPoints(3, 4);
 
 			// TODO: Experimentally determine the real transfer points when the model is finally visible.
