@@ -51,22 +51,31 @@ namespace Renderer.Graphics.Screen
 			spriteBatch = new SpriteBatch(ScreenManager.GraphicsDevice);
 
             volumetricModel = new VolumetricModel();
+			volumetricModel.TransferPoints = new TransferControlPoints(3, 4);
 
 			// TODO: Experimentally determine the real transfer points when the model is finally visible.
 			// Add the color transfer points.
-			volumetricModel.ColorPoints.Add(new TransferPoint(Color.Black, 0));		// TEMP
-			volumetricModel.ColorPoints.Add(new TransferPoint(Color.Aqua, 100));	// TEMP
-			volumetricModel.ColorPoints.Add(new TransferPoint(Color.White, 255));	// TEMP
+			volumetricModel.TransferPoints.AddRGBControlPoint(Color.Black, 0);		// TEMP
+			volumetricModel.TransferPoints.AddRGBControlPoint(Color.Aqua, 100);		// TEMP
+			volumetricModel.TransferPoints.AddRGBControlPoint(Color.White, 255);	// TEMP
 
 			// TODO: Experimentally determine the real transfer points when the model is finally visible.
 			// Add the alpha transfer points.
-			volumetricModel.AlphaPoints.Add(new TransferPoint(0f, 0));				// TEMP
-			volumetricModel.AlphaPoints.Add(new TransferPoint(0.5f, 100));			// TEMP
-			volumetricModel.AlphaPoints.Add(new TransferPoint(0.8f, 200));			// TEMP
-			volumetricModel.AlphaPoints.Add(new TransferPoint(0f, 255));			// TEMP
+			volumetricModel.TransferPoints.AddAlphaControlPoint(0f, 0);				// TEMP
+			volumetricModel.TransferPoints.AddAlphaControlPoint(0.5f, 100);			// TEMP
+			volumetricModel.TransferPoints.AddAlphaControlPoint(0.8f, 200);			// TEMP
+			volumetricModel.TransferPoints.AddAlphaControlPoint(0f, 255);			// TEMP
 
 			// Create the transfer function.
 			volumetricModel.CreateTransferFunction();
+
+			//volumetricModel.ColorPoints.Add(new TransferPoint(Color.Black, 0));		// TEMP
+			//volumetricModel.ColorPoints.Add(new TransferPoint(Color.Aqua, 100));	// TEMP
+			//volumetricModel.ColorPoints.Add(new TransferPoint(Color.White, 255));	// TEMP
+			//volumetricModel.AlphaPoints.Add(new TransferPoint(0f, 0));				// TEMP
+			//volumetricModel.AlphaPoints.Add(new TransferPoint(0.5f, 100));			// TEMP
+			//volumetricModel.AlphaPoints.Add(new TransferPoint(0.8f, 200));			// TEMP
+			//volumetricModel.AlphaPoints.Add(new TransferPoint(0f, 255));			// TEMP
 		}
 
 		public override void UnloadContent()
