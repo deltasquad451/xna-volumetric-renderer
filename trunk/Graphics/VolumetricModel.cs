@@ -27,8 +27,7 @@ namespace Renderer.Graphics
         private VertexDeclaration vertexDecl; // TEMP
         private Effect effect; // TEMP
 
-		private List<TransferPoint> colorPoints;
-		private List<TransferPoint> alphaPoints;
+		private TransferControlPoints transferPoints;
 		private Color[] transferFunc;
         #endregion
 
@@ -39,22 +38,34 @@ namespace Renderer.Graphics
         }
 
 		/// <summary>
-		/// Gets the list of color transfer points used by the transfer functions.
+		/// Gets or sets the transfer control points used by the transfer function.
 		/// </summary>
-		public List<TransferPoint> ColorPoints
+		public TransferControlPoints TransferPoints
 		{
 			get
-			{ return colorPoints; }
+			{ return transferPoints; }
+
+			set
+			{ transferPoints = value; }
 		}
 
-		/// <summary>
-		/// Gets the list of alpha transfer points used by the transfer functions.
-		/// </summary>
-		public List<TransferPoint> AlphaPoints
-		{
-			get
-			{ return alphaPoints; }
-		}
+		///// <summary>
+		///// Gets the list of color transfer points used by the transfer functions.
+		///// </summary>
+		//public List<ColorTransferPoint> ColorPoints
+		//{
+		//    get
+		//    { return colorPoints; }
+		//}
+
+		///// <summary>
+		///// Gets the list of alpha transfer points used by the transfer functions.
+		///// </summary>
+		//public List<AlphaTransferPoint> AlphaPoints
+		//{
+		//    get
+		//    { return alphaPoints; }
+		//}
         #endregion
 
         #region Initialization
@@ -76,8 +87,8 @@ namespace Renderer.Graphics
             tempFileReader.GetRawData(volumeTexture);
             tempFileReader.Close();
 
-			colorPoints = new List<TransferPoint>();
-			alphaPoints = new List<TransferPoint>();
+			//colorPoints = new List<ColorTransferPoint>();
+			//alphaPoints = new List<AlphaTransferPoint>();
         }
 		#endregion
 
@@ -140,7 +151,7 @@ namespace Renderer.Graphics
 		/// </summary>
 		public void CreateTransferFunction()
 		{
-			transferFunc = Transfer.CreateTransferFunction(colorPoints, alphaPoints);
+			transferFunc = Transfer.CreateTransferFunction(transferPoints);
 
 			// TODO: Convert the color array into a texture for use in a shader?
 		}
