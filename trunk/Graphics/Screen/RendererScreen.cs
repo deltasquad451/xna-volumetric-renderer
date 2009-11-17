@@ -50,7 +50,8 @@ namespace Renderer.Graphics.Screen
 			font = rendererContent.Load<SpriteFont>("menufont");
 			spriteBatch = new SpriteBatch(ScreenManager.GraphicsDevice);
 
-			volumetricModel = new VolumetricModel("..\\..\\..\\BostonTeapot.raw", 256, 256, 178);
+            volumetricModel = new VolumetricModel(VolumetricRenderer.Game, "..\\..\\..\\BostonTeapot.raw", 256, 256, 178);
+            volumetricModel.effectAssetName = "..\\..\\Shaders\\effects";
 			volumetricModel.TransferPoints = new TransferControlPoints(3, 4);
 
 			// TODO: Experimentally determine the real transfer points when the model is finally visible.
@@ -68,6 +69,8 @@ namespace Renderer.Graphics.Screen
 
 			// Create the transfer function.
 			volumetricModel.CreateTransferFunction();
+
+            VolumetricRenderer.Game.Components.Add(volumetricModel);
 
 			//volumetricModel.ColorPoints.Add(new TransferPoint(Color.Black, 0));		// TEMP
 			//volumetricModel.ColorPoints.Add(new TransferPoint(Color.Aqua, 100));	// TEMP
