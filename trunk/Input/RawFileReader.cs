@@ -18,10 +18,13 @@ using Renderer.Diagnostics;
 
 namespace Renderer.Input
 {
-    class RawFileReader
+    public class RawFileReader
     {
         #region Fields
-        FileStream fileStream;
+        private FileStream fileStream;
+		private int width;
+		private int height;
+		private int depth;
         #endregion
 
         #region Properties
@@ -41,10 +44,13 @@ namespace Renderer.Input
         #endregion
 
         #region Methods
-        public void Open(String filename)
+		public void Open(String filename, int width, int height, int depth)
         {
             Debug.Assert(File.Exists(filename), String.Format("Unabled to locate file {0}\\{1}", System.Environment.CurrentDirectory, filename));
             fileStream = new FileStream(filename, FileMode.Open);
+			this.width = width;
+			this.height = height;
+			this.depth = depth;
         }
 
         public void Close()
@@ -52,17 +58,17 @@ namespace Renderer.Input
             fileStream.Close();
         }
 
-        public void GetRawData(Texture3D texture3D)
+        public void GetRawData(out float[] scaledValues)
         {
             Debug.Assert(fileStream.CanRead, "Cannot read from file stream\n");
 
             BinaryReader binaryReader = new BinaryReader(fileStream);
-            float[] scaledValues;
+            //float[] scaledValues;
 
-            if (fileStream.Length > texture3D.Width * texture3D.Height * texture3D.Depth)
+            if (fileStream.Length > width * height * depth)
             {
                 // Assume we have a 16-bit RAW file
-                ushort[] dataBuffer = new ushort[texture3D.Width * texture3D.Height * texture3D.Depth];
+                ushort[] dataBuffer = new ushort[width * height * depth];
 
                 for (int i = 0; i < dataBuffer.Length; ++i)
                 {
@@ -73,25 +79,25 @@ namespace Renderer.Input
                 scaledValues = new float[dataBuffer.Length];
                 for (int i = 0; i < scaledValues.Length; ++i)
                 {
-					scaledValues[i] = dataBuffer[i] / ushort.MaxValue;
+					scaledValues[i] = (float)dataBuffer[i] / ushort.MaxValue;
                 }
             }
             else
             {
                 // We have an 8-bit RAW file
-                byte[] dataBuffer = new byte[texture3D.Width * texture3D.Height * texture3D.Depth];
+                byte[] dataBuffer = new byte[width * height * depth];
                 binaryReader.Read(dataBuffer, 0, sizeof(byte) * dataBuffer.Length);
 
                 // Scale the values to a [0,1] range
                 scaledValues = new float[dataBuffer.Length];
                 for (int i = 0; i < scaledValues.Length; ++i)
                 {
-                    scaledValues[i] = dataBuffer[i] / byte.MaxValue;
+                    scaledValues[i] = (float)dataBuffer[i] / byte.MaxValue;
                 }
             }
             binaryReader.Close();
 
-            texture3D.SetData(scaledValues);
+            //texture3D.SetData(scaledValues);
         }
         #endregion
     }

@@ -94,7 +94,7 @@ namespace Renderer.Graphics
 	{
 		#region Methods
 		/// <summary>
-		/// Creates a transfer function from color and alpha cubic splines.
+		/// Creates a transfer function from RGB and alpha cubic splines.
 		/// </summary>
 		/// <param name="tcp">Transfer control points to use.</param>
 		/// <returns>An array of RGBA colors corresponding to each isovalue 0-255.</returns>
@@ -107,18 +107,18 @@ namespace Renderer.Graphics
 			Debug.Assert(tcp.alphaIsoValues[0] == 0 && tcp.alphaIsoValues[tcp.alphaIsoValues.Count - 1] == 255, 
 				"The first and last isovalues must be 0 and 255, respectively.");
 
-			// Calculate the cubic splines for the color and alpha values.
-			CubicSpline<Cubic3> colorSpline = new CubicSpline<Cubic3>();
+			// Calculate the cubic splines for the RGB and alpha values.
+			CubicSpline<Cubic3> rgbSpline = new CubicSpline<Cubic3>();
 			CubicSpline<Cubic1> alphaSpline = new CubicSpline<Cubic1>();
-			colorSpline.Calculate(tcp.rgbPoints);
+			rgbSpline.Calculate(tcp.rgbPoints);
 			alphaSpline.Calculate(tcp.alphaPoints);
 
 			// Create the transfer function from the two splines.
 			Color[] transferFunc = new Color[256];
 
-			// ...color portion.
+			// ...RGB portion.
 			int index = 0;
-			for (int i = 0; i < colorSpline.Count; ++i)
+			for (int i = 0; i < rgbSpline.Count; ++i)
 			{
 				int interval = tcp.rgbIsoValues[i + 1] - tcp.rgbIsoValues[i];
 				Debug.Assert(interval > 0, "Isovalues must be incremental by at least 1/increment.");
@@ -127,10 +127,10 @@ namespace Renderer.Graphics
 				for (int j = 0; j < interval; ++j)
 				{
 					float position = j / (float)interval;
-					transferFunc[index++] = colorSpline.GetPointOnSpline(i, position).ToColor();
+					transferFunc[index++] = rgbSpline.GetPointOnSpline(i, position).ToColor();
 				}
 			}
-			transferFunc[index] = colorSpline.GetPointOnSpline(colorSpline.Count - 1, 1f).ToColor();
+			transferFunc[index] = rgbSpline.GetPointOnSpline(rgbSpline.Count - 1, 1f).ToColor();
 
 			// ...alpha portion.
 			index = 0;

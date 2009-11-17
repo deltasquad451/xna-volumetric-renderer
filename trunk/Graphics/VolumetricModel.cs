@@ -7,8 +7,6 @@
 #endregion
 
 #region Using Statements
-using System;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Renderer.Diagnostics;
@@ -23,12 +21,20 @@ namespace Renderer.Graphics
     class VolumetricModel
     {
         #region Fields
+		private string filename;
+		private int width;
+		private int height;
+		private int depth;
+
+		private float[] volumeData;
+		private Vector3[] volumeGradients;
         private Texture3D volumeTexture;
-        private VertexDeclaration vertexDecl; // TEMP
-        private Effect effect; // TEMP
 
 		private TransferControlPoints transferPoints;
 		private Color[] transferFunc;
+
+        private VertexDeclaration vertexDecl; // TEMP
+        private Effect effect;	// TEMP
         #endregion
 
         #region Properties
@@ -69,27 +75,80 @@ namespace Renderer.Graphics
         #endregion
 
         #region Initialization
-        public VolumetricModel()
+		/// <param name="filename">Filename of the volumetric model.</param>
+		/// <param name="width">Width of the volume.</param>
+		/// <param name="height">Height of the volume.</param>
+		/// <param name="depth">Depth of the volume.</param>
+        public VolumetricModel(string filename, int width, int height, int depth)
         {
+			this.filename = filename;
+			this.width = width;
+			this.height = height;
+			this.depth = depth;
+
+			// Load the teapot volume data.
+			RawFileReader tempFileReader = new RawFileReader();
+			tempFileReader.Open(filename, width, height, depth);
+			tempFileReader.GetRawData(out volumeData);
+			tempFileReader.Close();
+
+			// Compute the gradients at each voxel.
+			ComputeGradients();
+
+			volumeTexture = new Texture3D(VolumetricRenderer.Game.GraphicsDevice, width, height, depth, 1, TextureUsage.None, SurfaceFormat.HalfVector4);
+			
+			//colorPoints = new List<ColorTransferPoint>();
+			//alphaPoints = new List<AlphaTransferPoint>();
+
             // TEMP
-            vertexDecl = new VertexDeclaration(VolumetricRenderer.Game.GraphicsDevice,
-                                    VertexPositionColor.VertexElements);
+            vertexDecl = new VertexDeclaration(VolumetricRenderer.Game.GraphicsDevice, VertexPositionColor.VertexElements);
 
             VolumetricRenderer.Game.GraphicsDevice.VertexDeclaration = vertexDecl;
             effect = VolumetricRenderer.Game.Content.Load<Effect>("Shaders/effects");
             // TEMP - end
-
-            // For now, just initialize this to teapot volume values
-            volumeTexture = new Texture3D(VolumetricRenderer.Game.GraphicsDevice, 256, 256, 178, 0,
-                                    TextureUsage.Linear, SurfaceFormat.Single);
-            RawFileReader tempFileReader = new RawFileReader();
-            tempFileReader.Open("..\\..\\..\\BostonTeapot.raw");
-            tempFileReader.GetRawData(volumeTexture);
-            tempFileReader.Close();
-
-			//colorPoints = new List<ColorTransferPoint>();
-			//alphaPoints = new List<AlphaTransferPoint>();
         }
+
+		/// <summary>
+		/// Computes the gradients at each voxel using the 3D Central Differences method.
+		/// </summary>
+		private void ComputeGradients()
+		{
+			volumeGradients = new Vector3[width * height * depth];
+
+			for (int z = 0; z < depth; ++z)
+			{
+				for (int y = 0; y < height; ++y)
+				{
+					for (int x = 0; x < width; ++x)
+					{
+						// Get the "previous" data.
+						Vector3 v1;
+						v1.X = GetVolumeDataBounded(x - 1, y, z);
+						v1.Y = GetVolumeDataBounded(x, y - 1, z);
+						v1.Z = GetVolumeDataBounded(x, y, z - 1);
+
+						// Get the "next" data.
+						Vector3 v2;
+						v2.X = GetVolumeDataBounded(x + 1, y, z);
+						v2.Y = GetVolumeDataBounded(x, y + 1, z);
+						v2.Z = GetVolumeDataBounded(x, y, z + 1);
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets the volume data at the specified x,y,z point, making sure that the point stays 
+		/// within the bounds of the volume.
+		/// </summary>
+		private float GetVolumeDataBounded(int x, int y, int z)
+		{
+			x = (int)MathHelper.Clamp(x, 0, width - 1);
+			y = (int)MathHelper.Clamp(y, 0, height - 1);
+			z = (int)MathHelper.Clamp(z, 0, depth - 1);
+
+			return volumeData[x + (y * width) + (z * width * height)];
+		}
 		#endregion
 
 		#region Update
