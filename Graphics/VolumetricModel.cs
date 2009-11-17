@@ -7,10 +7,12 @@
 #endregion
 
 #region Using Statements
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Renderer.Diagnostics;
 using Renderer.Input;
+using Renderer.Graphics;
 #endregion
 
 namespace Renderer.Graphics
@@ -18,31 +20,25 @@ namespace Renderer.Graphics
 	/// <summary>
 	/// A 3D volumetric model constructed from voxel data.
 	/// </summary>
-    class VolumetricModel
+    class VolumetricModel : Renderable
     {
         #region Fields
-		private string filename;
-		private int width;
-		private int height;
-		private int depth;
-
-		private float[] volumeData;
-		private Vector3[] volumeGradients;
-        private Texture3D volumeTexture;
+        public string volumeAssetName { get; set; }
+        protected Texture3D volumeTexture { get; set; }
+        protected int width;
+        protected int height;
+        protected int depth;
+        //protected VertexDeclaration vertexDecl; // TEMP
+        //protected Effect effect; // TEMP
+        protected string technique;
+		protected float[] volumeData;
+		protected Vector3[] volumeGradients;
 
 		private TransferControlPoints transferPoints;
 		private Color[] transferFunc;
-
-        private VertexDeclaration vertexDecl; // TEMP
-        private Effect effect;	// TEMP
         #endregion
 
         #region Properties
-        public Texture3D VolumeTexture
-        {
-            get { return volumeTexture; }
-        }
-
 		/// <summary>
 		/// Gets or sets the transfer control points used by the transfer function.
 		/// </summary>
@@ -54,6 +50,50 @@ namespace Renderer.Graphics
 			set
 			{ transferPoints = value; }
 		}
+
+        /// <summary>
+        /// Gets the 3D volume width.
+        /// </summary>
+        public int Width
+        {
+            get
+            {
+                return width;
+            }
+        }
+
+        /// <summary>
+        /// Gets the 3D volume height.
+        /// </summary>
+        public int Height
+        {
+            get
+            {
+                return height;
+            }
+        }
+
+        /// <summary>
+        /// Gets the 3D volume depth.
+        /// </summary>
+        public int Depth
+        {
+            get
+            {
+                return depth;
+            }
+        }
+
+        /// <summary>
+        /// Gets the technique name.
+        /// </summary>
+        public string Technique
+        {
+            get
+            {
+                return technique;
+            }
+        }
 
 		///// <summary>
 		///// Gets the list of color transfer points used by the transfer functions.
@@ -75,37 +115,64 @@ namespace Renderer.Graphics
         #endregion
 
         #region Initialization
-		/// <param name="filename">Filename of the volumetric model.</param>
+		/// <param name="volumentAssetName">Asset name of the volumetric model.</param>
 		/// <param name="width">Width of the volume.</param>
 		/// <param name="height">Height of the volume.</param>
 		/// <param name="depth">Depth of the volume.</param>
-        public VolumetricModel(string filename, int width, int height, int depth)
+        public VolumetricModel(Game game, string volumeAssetName,
+                                int width, int height, int depth)
+            : base(game)
         {
-			this.filename = filename;
-			this.width = width;
-			this.height = height;
-			this.depth = depth;
-
-			// Load the teapot volume data.
-			RawFileReader tempFileReader = new RawFileReader();
-			tempFileReader.Open(filename, width, height, depth);
-			tempFileReader.GetRawData(out volumeData);
-			tempFileReader.Close();
-
 			// Compute the gradients at each voxel.
 			ComputeGradients();
-
-			volumeTexture = new Texture3D(VolumetricRenderer.Game.GraphicsDevice, width, height, depth, 1, TextureUsage.None, SurfaceFormat.HalfVector4);
-			
-			//colorPoints = new List<ColorTransferPoint>();
-			//alphaPoints = new List<AlphaTransferPoint>();
-
+            /*
             // TEMP
             vertexDecl = new VertexDeclaration(VolumetricRenderer.Game.GraphicsDevice, VertexPositionColor.VertexElements);
 
             VolumetricRenderer.Game.GraphicsDevice.VertexDeclaration = vertexDecl;
-            effect = VolumetricRenderer.Game.Content.Load<Effect>("Shaders/effects");
             // TEMP - end
+            */
+            effectAssetName = "Shaders/effects";
+            modelAssetName = "Models/box";
+            technique = "RayCast";
+
+            this.volumeAssetName = volumeAssetName;
+            this.width = width;
+            this.height = height;
+            this.depth = depth;
+
+			//colorPoints = new List<TransferPoint>();
+			//alphaPoints = new List<TransferPoint>();
+        }
+
+        public override void Initialize()
+        {
+            base.Initialize();
+        }
+
+        protected override void LoadContent()
+        {
+            base.LoadContent();
+
+            volumeTexture = new Texture3D(VolumetricRenderer.Game.GraphicsDevice, width, height, depth, 0,
+                        TextureUsage.Linear, SurfaceFormat.Single);
+
+            // Create a step size based on the largest side length and create a scale factor
+            // for the shader
+            float maxSideLength = (float)Math.Max(width, Math.Max(height, depth));
+            Vector3 stepSize = new Vector3(1.0f / maxSideLength, 1.0f / maxSideLength, 1.0f / maxSideLength);
+            Vector3 scaleFactor = new Vector3(width, height, depth) * stepSize;
+
+            effect.Parameters["StepSize"].SetValue(stepSize);
+            effect.Parameters["Iterations"].SetValue((int)maxSideLength * 2.0f);
+            effect.Parameters["ScaleFactor"].SetValue(new Vector4(scaleFactor, 1.0f));
+
+            RawFileReader tempFileReader = new RawFileReader();
+            tempFileReader.Open(volumeAssetName, width, height, depth);
+            tempFileReader.GetRawData(out volumeData);
+            tempFileReader.Close();
+
+            volumeTexture.SetData(volumeData);
         }
 
 		/// <summary>
@@ -114,7 +181,6 @@ namespace Renderer.Graphics
 		private void ComputeGradients()
 		{
 			volumeGradients = new Vector3[width * height * depth];
-
 			for (int z = 0; z < depth; ++z)
 			{
 				for (int y = 0; y < height; ++y)
@@ -152,15 +218,19 @@ namespace Renderer.Graphics
 		#endregion
 
 		#region Update
-		public void Update(GameTime gameTime)
+		public override void Update(GameTime gameTime)
         {
-            // TODO
+            base.Update(gameTime);
+
+            VolumetricRenderer.Game.GraphicsDevice.RenderState.AlphaBlendEnable = false;
         }
 		#endregion
 
 		#region Draw
-		public void Draw(GameTime gameTime)
+        public override void Draw(GameTime gameTime)
         {
+            base.Draw(gameTime);
+            /*
             // TEMP - draw a triangle to test the camera
             VolumetricRenderer.Game.GraphicsDevice.RenderState.CullMode = CullMode.None;
             effect.CurrentTechnique = effect.Techniques["Colored"];
@@ -201,6 +271,7 @@ namespace Renderer.Graphics
             }
             effect.End();
             // TEMP - end
+            */
         }
         #endregion
 

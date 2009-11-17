@@ -38,7 +38,7 @@
     <Compile Include="Shaders\effects.fx">
       <Name>effects</Name>
       <Importer>EffectImporter</Importer>
-      <Processor>EffectProcessor</Processor>
+      <Processor>EffectCompiler</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -68,6 +68,19 @@
       <Name>menufont</Name>
       <Importer>FontDescriptionImporter</Importer>
       <Processor>FontDescriptionProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EffectCompiler\EffectCompiler.csproj">
+      <Project>{39D02335-4AFC-4AC4-A12B-755C189542DC}</Project>
+      <Name>EffectCompiler</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Models\box.X">
+      <Name>box</Name>
+      <Importer>XImporter</Importer>
+      <Processor>ModelProcessor</Processor>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\v3.0\Microsoft.Xna.GameStudio.ContentPipeline.targets" />

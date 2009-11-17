@@ -87,6 +87,7 @@
     <Compile Include="Diagnostics\Debug.cs" />
     <Compile Include="Graphics\Camera\Camera.cs" />
     <Compile Include="Graphics\Cubic.cs" />
+    <Compile Include="Graphics\Renderable.cs" />
     <Compile Include="Graphics\Screen\AssertScreen.cs" />
     <Compile Include="Graphics\Screen\BackgroundScreen.cs" />
     <Compile Include="Graphics\Screen\GameScreen.cs" />
