@@ -38,8 +38,7 @@ namespace Renderer.Graphics.Screen
 		#region Events
 		private void LaunchRenderer_Selected(object sender, MenuEventArgs args)
 		{
-			ScreenManager.RemoveAllScreens();
-			ScreenManager.AddScreen(new RendererScreen());
+			ScreenManager.AddScreen(new LoadingScreen(new RendererScreen(), TransitionOffTime));
 		}
 
 		private void ExitApp_Selected(object sender, MenuEventArgs args)

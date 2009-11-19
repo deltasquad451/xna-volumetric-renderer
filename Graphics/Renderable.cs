@@ -27,7 +27,7 @@ namespace Renderer.Graphics
         public string effectAssetName { get; set; }
         #endregion
 
-#region Properties
+		#region Properties
         public Vector3 Center
         {
             get
@@ -54,7 +54,7 @@ namespace Renderer.Graphics
                 return effect;
             }
         }
-#endregion
+		#endregion
 
         #region Methods
         public Renderable(Game game)
