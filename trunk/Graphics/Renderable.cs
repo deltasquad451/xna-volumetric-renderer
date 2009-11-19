@@ -9,6 +9,13 @@ using Microsoft.Xna.Framework.Content;
 
 namespace Renderer.Graphics
 {
+    public struct Light
+    {
+        public Vector3 Direction;
+        public Vector4 DiffuseColor;
+        public Vector4 AmbientColor;
+    }
+
     class Renderable : DrawableGameComponent
     {
         #region Fields
@@ -25,6 +32,8 @@ namespace Renderer.Graphics
 
         protected Effect effect;
         public string effectAssetName { get; set; }
+
+        protected bool isLightingEnabled;
         #endregion
 
 		#region Properties
@@ -64,6 +73,7 @@ namespace Renderer.Graphics
             scale = 1.0f;
             rotation = 0.0f;
             rotAxis = Vector3.Up;
+            isLightingEnabled = false;
         }
 
         public override void Initialize()
@@ -71,6 +81,7 @@ namespace Renderer.Graphics
             worldMat =  Matrix.CreateFromAxisAngle(rotAxis, rotation) *
                         Matrix.CreateScale(scale) *
                         Matrix.CreateTranslation(position);
+
             base.Initialize();
         }
 
@@ -122,7 +133,7 @@ namespace Renderer.Graphics
                 DrawBasicEffect();
             }
 
-            base.Draw(gameTime);
+            //base.Draw(gameTime);
         }
 
         protected virtual void DrawBasicEffect()
@@ -139,7 +150,15 @@ namespace Renderer.Graphics
                     basicEffect.Projection = VolumetricRenderer.Game.Camera.projectionMat;
 
                     // TEMP - until we get lights added
-                    basicEffect.LightingEnabled = false;
+                    if (isLightingEnabled)
+                    {
+                        basicEffect.EnableDefaultLighting();
+                        basicEffect.PreferPerPixelLighting = true;
+                    }
+                    else
+                    {
+                        basicEffect.LightingEnabled = false;
+                    }
                 }
 
                 mesh.Draw();
@@ -165,6 +184,7 @@ namespace Renderer.Graphics
                 effect.Parameters["WorldViewProjection"].SetValue(worldMat *
                                                 VolumetricRenderer.Game.Camera.viewMat *
                                                 VolumetricRenderer.Game.Camera.projectionMat);
+                effect.Parameters["CameraPosition"].SetValue(VolumetricRenderer.Game.Camera.viewMat.Translation);
 
                 VolumetricRenderer.Game.GraphicsDevice.Indices = mesh.IndexBuffer;
 

@@ -11,7 +11,7 @@ namespace Renderer.Graphics.Camera
     {
         #region Fields
         private const float NEAR_PLANE_DIST = 0.1f;
-        private const float FAR_PLANE_DIST = 1000.0f;
+        private const float FAR_PLANE_DIST = 100.0f;
 
         public Vector3 position { get; set; }
         public Vector3 target {get; set; }
@@ -25,7 +25,7 @@ namespace Renderer.Graphics.Camera
         public Camera(Viewport viewport)
         {
             aspectRatio = (float)viewport.Width / (float)viewport.Height;
-            fov = MathHelper.ToRadians(90.0f);
+            fov = MathHelper.ToRadians(60.0f);
             projectionMat = Matrix.CreatePerspectiveFieldOfView(fov, aspectRatio,
                                                     NEAR_PLANE_DIST, FAR_PLANE_DIST);
             position = new Vector3(2.5f, 2.5f, -3.0f);

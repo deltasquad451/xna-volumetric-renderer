@@ -38,6 +38,7 @@ namespace Renderer.Graphics.Screen
 			: base()
 		{
 			TransitionOnTime = TimeSpan.FromSeconds(0.25);
+            VolumetricRenderer.Game.GraphicsDevice.RenderState.CullMode = CullMode.CullClockwiseFace;
 		}
 
 		public override void LoadContent()
@@ -50,6 +51,13 @@ namespace Renderer.Graphics.Screen
 
             volumetricModel = new VolumetricModel(VolumetricRenderer.Game, "..\\..\\..\\BostonTeapot.raw", 256, 256, 178);
             volumetricModel.effectAssetName = "..\\..\\Shaders\\effects";
+            volumetricModel.StepScale = 0.5f;
+            volumetricModel.scale = 5.0f;
+#if DEBUG
+            volumetricModel.drawWireframeBox = true;
+#else
+            volumetricModel.drawWireframeBox = false;
+#endif
 			volumetricModel.TransferPoints = new TransferControlPoints(3, 4);
 
 			// TODO: Experimentally determine the real transfer points when the model is finally visible.

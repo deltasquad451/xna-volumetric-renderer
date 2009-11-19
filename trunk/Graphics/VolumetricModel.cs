@@ -24,32 +24,24 @@ namespace Renderer.Graphics
     class VolumetricModel : Renderable
     {
         #region Fields
+        protected RenderTarget2D front2DTex;
+        protected RenderTarget2D back2DTex;
         public string volumeAssetName { get; set; }
         protected Texture3D volumeTexture { get; set; }
         protected int width;
         protected int height;
         protected int depth;
-        //protected VertexDeclaration vertexDecl; // TEMP
-        //protected Effect effect; // TEMP
+        protected float stepScale = 1.0f;
         protected string technique;
+        public bool drawWireframeBox { get; set; }
+
+        private static bool is2DTexInitialized = false;
 
 		private TransferControlPoints transferPoints;
 		private Color[] transferFunc;
         #endregion
 
         #region Properties
-		/// <summary>
-		/// Gets or sets the transfer control points used by the transfer function.
-		/// </summary>
-		public TransferControlPoints TransferPoints
-		{
-			get
-			{ return transferPoints; }
-
-			set
-			{ transferPoints = value; }
-		}
-
         /// <summary>
         /// Gets the 3D volume width.
         /// </summary>
@@ -84,6 +76,28 @@ namespace Renderer.Graphics
         }
 
         /// <summary>
+        /// Gets or sets the step scale for the ray cast.
+        /// </summary>
+        public float StepScale
+        {
+            get
+            {
+                return stepScale;
+            }
+            set
+            {
+                stepScale = value;
+                if (effect != null)
+                {
+                    float maxSideLength = (float)Math.Max(width, Math.Max(height, depth));
+                    Vector3 stepSize = new Vector3(1.0f / width, 1.0f / height, 1.0f / depth);
+                    effect.Parameters["StepSize"].SetValue(stepSize * stepScale);
+                    effect.Parameters["Iterations"].SetValue((int)maxSideLength * (1.0f / stepScale));
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets the technique name.
         /// </summary>
         public string Technique
@@ -92,6 +106,18 @@ namespace Renderer.Graphics
             {
                 return technique;
             }
+        }
+
+        /// <summary>
+        /// Gets or sets the transfer control points used by the transfer function.
+        /// </summary>
+        public TransferControlPoints TransferPoints
+        {
+            get
+            { return transferPoints; }
+
+            set
+            { transferPoints = value; }
         }
 
 		///// <summary>
@@ -122,13 +148,6 @@ namespace Renderer.Graphics
                                 int width, int height, int depth)
             : base(game)
         {
-            /*
-            // TEMP
-            vertexDecl = new VertexDeclaration(VolumetricRenderer.Game.GraphicsDevice, VertexPositionColor.VertexElements);
-
-            VolumetricRenderer.Game.GraphicsDevice.VertexDeclaration = vertexDecl;
-            // TEMP - end
-            */
             effectAssetName = "Shaders/effects";
             modelAssetName = "Models/box";
             technique = "RayCast";
@@ -155,10 +174,12 @@ namespace Renderer.Graphics
             // for the shader
             float maxSideLength = (float)Math.Max(width, Math.Max(height, depth));
             Vector3 stepSize = new Vector3(1.0f / maxSideLength, 1.0f / maxSideLength, 1.0f / maxSideLength);
-            Vector3 scaleFactor = new Vector3(width, height, depth) * stepSize;
 
             effect.Parameters["StepSize"].SetValue(stepSize);
-            effect.Parameters["Iterations"].SetValue((int)maxSideLength * 2.0f);
+            effect.Parameters["Iterations"].SetValue((int)maxSideLength * (1.0f / stepScale) * 2.0f);
+
+            Vector3 sizes = new Vector3(width, height, depth);
+            Vector3 scaleFactor = Vector3.One / ((Vector3.One * maxSideLength) / (sizes * Vector3.One));
             effect.Parameters["ScaleFactor"].SetValue(new Vector4(scaleFactor, 1.0f));
 
 			// Get the scaled volume data.
@@ -175,7 +196,11 @@ namespace Renderer.Graphics
 			// Set the data into our Texture3D object, for use in the shader.
 			volumeTexture = new Texture3D(VolumetricRenderer.Game.GraphicsDevice, width, height, depth, 0,
 				TextureUsage.None, SurfaceFormat.HalfVector4);
-			volumeTexture.SetData<HalfVector4>(textureData);
+            volumeTexture.SetData<HalfVector4>(textureData);
+            //volumeTexture = new Texture3D(VolumetricRenderer.Game.GraphicsDevice, width, height, depth, 0,
+            //    TextureUsage.None, SurfaceFormat.Single);
+            //volumeTexture.SetData(volumeData);
+            effect.Parameters["Volume"].SetValue(volumeTexture);
         }
 
 		/// <summary>
@@ -282,56 +307,100 @@ namespace Renderer.Graphics
         {
             base.Update(gameTime);
 
+            //set the technique to draw positions
+            effect.CurrentTechnique = effect.Techniques["RenderPosition"];
+
             VolumetricRenderer.Game.GraphicsDevice.RenderState.AlphaBlendEnable = false;
+
+            //draw front faces
+            //draw the pixel positions to the texture
+            VolumetricRenderer.Game.GraphicsDevice.SetRenderTarget(0, front2DTex);
+            VolumetricRenderer.Game.GraphicsDevice.Clear(Color.Black);
+
+            base.DrawCustomEffect();
+
+            VolumetricRenderer.Game.GraphicsDevice.SetRenderTarget(0, null);
+
+            //draw back faces
+            //draw the pixel positions to the texture
+            VolumetricRenderer.Game.GraphicsDevice.SetRenderTarget(0, back2DTex);
+            VolumetricRenderer.Game.GraphicsDevice.Clear(Color.Black);
+            VolumetricRenderer.Game.GraphicsDevice.RenderState.CullMode = CullMode.CullCounterClockwiseFace;
+
+            base.DrawCustomEffect();
+
+            VolumetricRenderer.Game.GraphicsDevice.SetRenderTarget(0, null);
+            VolumetricRenderer.Game.GraphicsDevice.RenderState.CullMode = CullMode.CullClockwiseFace;
         }
 		#endregion
 
 		#region Draw
-        public override void Draw(GameTime gameTime)
+        protected override void DrawCustomEffect()
         {
-            base.Draw(gameTime);
-            /*
-            // TEMP - draw a triangle to test the camera
-            VolumetricRenderer.Game.GraphicsDevice.RenderState.CullMode = CullMode.None;
-            effect.CurrentTechnique = effect.Techniques["Colored"];
-            effect.Parameters["xView"].SetValue(VolumetricRenderer.Game.Camera.viewMat);
-            effect.Parameters["xProjection"].SetValue(VolumetricRenderer.Game.Camera.projectionMat);
-            effect.Parameters["xWorld"].SetValue(Matrix.Identity);
-            int points = 8;
-            VertexPositionColor[] pointList = new VertexPositionColor[points];
-
-            for (int x = 0; x < points / 2; x++)
+            if (!is2DTexInitialized)
             {
-                for (int y = 0; y < 2; y++)
+                // BB - The 2D textures have to be initialized here because of the multithreading
+                // going on.  C# throws an exception when trying to access a UI element in a
+                // different thread than it was created.  Since the draw is running on our own
+                // thread and 2DTextures are UI elements, this causes problems.
+                PresentationParameters pp = Game.GraphicsDevice.PresentationParameters;
+                SurfaceFormat format = pp.BackBufferFormat;
+                MultiSampleType msType = pp.MultiSampleType;
+                int msQuality = pp.MultiSampleQuality;
+
+                //create the front and back position textures
+                //check to make sure that there is a sutiable format supported
+                SurfaceFormat rtFormat = SurfaceFormat.HalfVector4;
+                if (isFormatSupported(SurfaceFormat.HalfVector4))
                 {
-                    pointList[(x * 2) + y] = new VertexPositionColor(
-                        new Vector3(x * 5, y * 5, 2), Color.DeepPink);
+                    rtFormat = SurfaceFormat.HalfVector4;
                 }
+                else if (isFormatSupported(SurfaceFormat.Vector4))
+                {
+                    rtFormat = SurfaceFormat.Vector4;
+                }
+                else if (isFormatSupported(SurfaceFormat.Rgba64))
+                {
+                    rtFormat = SurfaceFormat.Rgba64;
+                }
+                else //no suitable format found
+                {
+                    Debug.Assert(false, "Hardware must be SM 3.0 compliant and support RGBA16F, RGBA32F, or RGBA64. Error creating position render targets");
+                    Game.Exit();
+                }
+
+                front2DTex = new RenderTarget2D(VolumetricRenderer.Game.GraphicsDevice, pp.BackBufferWidth, pp.BackBufferHeight,
+                                            1, rtFormat, msType, msQuality);
+                back2DTex = new RenderTarget2D(VolumetricRenderer.Game.GraphicsDevice, pp.BackBufferWidth, pp.BackBufferHeight,
+                                            1, rtFormat, msType, msQuality);
+                is2DTexInitialized = true;
             }
-
-            short[] triangleStripIndices = new short[8] { 0, 1, 2, 3, 4, 5, 6, 7 };
-
-            VolumetricRenderer.Game.GraphicsDevice.Clear(Color.Black);
-
-            effect.Begin();
-            foreach (EffectPass pass in effect.CurrentTechnique.Passes)
+            else
             {
-                pass.Begin();
-                VolumetricRenderer.Game.GraphicsDevice.VertexDeclaration = vertexDecl;
-                VolumetricRenderer.Game.GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionColor>(
-                    PrimitiveType.TriangleStrip,
-                    pointList,
-                    0,  // vertex buffer offset to add to each element of the index buffer
-                    8,  // number of vertices to draw
-                    triangleStripIndices,
-                    0,  // first index element to read
-                    6   // number of primitives to draw
-                );
-                pass.End();
+
+                //Game.GraphicsDevice.RenderState.AlphaBlendEnable = true;
+                VolumetricRenderer.Game.GraphicsDevice.RenderState.SourceBlend = Blend.SourceAlpha;
+                VolumetricRenderer.Game.GraphicsDevice.RenderState.DestinationBlend = Blend.InverseSourceAlpha;
+
+                //draw wireframe
+                if (drawWireframeBox)
+                {
+                    VolumetricRenderer.Game.GraphicsDevice.RenderState.CullMode = CullMode.None;
+                    VolumetricRenderer.Game.GraphicsDevice.RenderState.FillMode = FillMode.WireFrame;
+
+                    effect.CurrentTechnique = effect.Techniques["WireFrame"];
+                    base.DrawCustomEffect();
+
+                    VolumetricRenderer.Game.GraphicsDevice.RenderState.CullMode = CullMode.CullClockwiseFace;
+                    VolumetricRenderer.Game.GraphicsDevice.RenderState.FillMode = FillMode.Solid;
+                }
+
+                effect.CurrentTechnique = effect.Techniques[technique];
+                effect.Parameters["Front"].SetValue(front2DTex.GetTexture());
+                effect.Parameters["Back"].SetValue(back2DTex.GetTexture());
+
+                base.DrawCustomEffect();
             }
-            effect.End();
-            // TEMP - end
-            */
         }
         #endregion
 
@@ -345,6 +414,17 @@ namespace Renderer.Graphics
 
 			// TODO: Convert the color array into a texture for use in a shader?
 		}
+
+        private bool isFormatSupported(SurfaceFormat format)
+        {
+            return VolumetricRenderer.Game.GraphicsDevice.CreationParameters.Adapter.CheckDeviceFormat(
+                                         VolumetricRenderer.Game.GraphicsDevice.CreationParameters.DeviceType,
+                                         VolumetricRenderer.Game.GraphicsDevice.DisplayMode.Format,
+                                         TextureUsage.None,
+                                         QueryUsages.None,
+                                         ResourceType.RenderTarget,
+                                         format);
+        }
 		#endregion
 	}
 }

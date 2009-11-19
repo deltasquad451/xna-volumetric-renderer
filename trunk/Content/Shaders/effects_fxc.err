@@ -1,0 +1,2 @@
+D:\personal stuff\USC college\3DGraphics\VolumetricRenderer\Content\Shaders\effects.fx(128,12): warning X4121: gradient-based operations must be moved out of flow control to prevent divergence. Performance may improve by using a non-gradient operation
+
