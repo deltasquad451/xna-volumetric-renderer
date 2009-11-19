@@ -91,6 +91,7 @@
     <Compile Include="Graphics\Screen\AssertScreen.cs" />
     <Compile Include="Graphics\Screen\BackgroundScreen.cs" />
     <Compile Include="Graphics\Screen\GameScreen.cs" />
+    <Compile Include="Graphics\Screen\LoadingScreen.cs" />
     <Compile Include="Graphics\Screen\MainMenuScreen.cs" />
     <Compile Include="Graphics\Screen\MenuEntry.cs" />
     <Compile Include="Graphics\Screen\MenuScreen.cs" />

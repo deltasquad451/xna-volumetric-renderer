@@ -8,11 +8,12 @@
 
 #region Using Statements
 using System;
+using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Graphics.PackedVector;
 using Renderer.Diagnostics;
 using Renderer.Input;
-using Renderer.Graphics;
 #endregion
 
 namespace Renderer.Graphics
@@ -31,8 +32,6 @@ namespace Renderer.Graphics
         //protected VertexDeclaration vertexDecl; // TEMP
         //protected Effect effect; // TEMP
         protected string technique;
-		protected float[] volumeData;
-		protected Vector3[] volumeGradients;
 
 		private TransferControlPoints transferPoints;
 		private Color[] transferFunc;
@@ -123,8 +122,6 @@ namespace Renderer.Graphics
                                 int width, int height, int depth)
             : base(game)
         {
-			// Compute the gradients at each voxel.
-			ComputeGradients();
             /*
             // TEMP
             vertexDecl = new VertexDeclaration(VolumetricRenderer.Game.GraphicsDevice, VertexPositionColor.VertexElements);
@@ -154,9 +151,6 @@ namespace Renderer.Graphics
         {
             base.LoadContent();
 
-            volumeTexture = new Texture3D(VolumetricRenderer.Game.GraphicsDevice, width, height, depth, 0,
-                        TextureUsage.Linear, SurfaceFormat.Single);
-
             // Create a step size based on the largest side length and create a scale factor
             // for the shader
             float maxSideLength = (float)Math.Max(width, Math.Max(height, depth));
@@ -167,47 +161,113 @@ namespace Renderer.Graphics
             effect.Parameters["Iterations"].SetValue((int)maxSideLength * 2.0f);
             effect.Parameters["ScaleFactor"].SetValue(new Vector4(scaleFactor, 1.0f));
 
+			// Get the scaled volume data.
+			float[] volumeData;
             RawFileReader tempFileReader = new RawFileReader();
             tempFileReader.Open(volumeAssetName, width, height, depth);
             tempFileReader.GetRawData(out volumeData);
             tempFileReader.Close();
 
-            volumeTexture.SetData(volumeData);
+			// Compute the gradient at each voxel and combine them with the isovalues.
+			HalfVector4[] textureData;
+			CreateTextureData(volumeData, out textureData);
+
+			// Set the data into our Texture3D object, for use in the shader.
+			volumeTexture = new Texture3D(VolumetricRenderer.Game.GraphicsDevice, width, height, depth, 0,
+				TextureUsage.None, SurfaceFormat.HalfVector4);
+			volumeTexture.SetData<HalfVector4>(textureData);
         }
 
 		/// <summary>
-		/// Computes the gradients at each voxel using the 3D Central Differences method.
+		/// Computes the gradients at each voxel using the 3D Central Differences method and places 
+		/// them together with the isovalues. This method will try to load a gradient file for the
+		/// asset if it exists; if it doesn't, it does the gradient computations and saves it to a file.
 		/// </summary>
-		private void ComputeGradients()
+		/// <param name="volumeData">Scaled volume data of the model.</param>
+		/// <param name="textureData">Texture data that is returned.</param>
+		private void CreateTextureData(float[] volumeData, out HalfVector4[] textureData)
 		{
-			volumeGradients = new Vector3[width * height * depth];
-			for (int z = 0; z < depth; ++z)
-			{
-				for (int y = 0; y < height; ++y)
-				{
-					for (int x = 0; x < width; ++x)
-					{
-						// Get the "previous" data.
-						Vector3 v1;
-						v1.X = GetVolumeDataBounded(x - 1, y, z);
-						v1.Y = GetVolumeDataBounded(x, y - 1, z);
-						v1.Z = GetVolumeDataBounded(x, y, z - 1);
+			Vector3[] volumeGradients = new Vector3[width * height * depth];
 
-						// Get the "next" data.
-						Vector3 v2;
-						v2.X = GetVolumeDataBounded(x + 1, y, z);
-						v2.Y = GetVolumeDataBounded(x, y + 1, z);
-						v2.Z = GetVolumeDataBounded(x, y, z + 1);
-					}
+			string ext = volumeAssetName.Substring(volumeAssetName.LastIndexOf('.'));
+			string gradientFile = volumeAssetName.Replace(ext, ".grad");
+
+			if (File.Exists(gradientFile))
+			{
+				// Gradient file already exists, so load it.
+				FileStream file = new FileStream(gradientFile, FileMode.Open);
+				BinaryReader reader = new BinaryReader(file);
+
+				int index = 0;
+				for (int i = 0; i < volumeGradients.Length; ++i)
+				{
+					Vector3 gradient;
+					gradient.X = reader.ReadSingle();
+					gradient.Y = reader.ReadSingle();
+					gradient.Z = reader.ReadSingle();
+
+					volumeGradients[index++] = gradient;
 				}
+
+				reader.Close();
+				file.Close();
 			}
+			else
+			{
+				// Gradient file doesn't exist, so do the computations.
+				int index = 0;
+				for (int z = 0; z < depth; ++z)
+					for (int y = 0; y < height; ++y)
+						for (int x = 0; x < width; ++x)
+						{
+							// Get the "previous" data.
+							Vector3 v1;
+							v1.X = GetVolumeDataBounded(volumeData, x - 1, y, z);
+							v1.Y = GetVolumeDataBounded(volumeData, x, y - 1, z);
+							v1.Z = GetVolumeDataBounded(volumeData, x, y, z - 1);
+
+							// Get the "next" data.
+							Vector3 v2;
+							v2.X = GetVolumeDataBounded(volumeData, x + 1, y, z);
+							v2.Y = GetVolumeDataBounded(volumeData, x, y + 1, z);
+							v2.Z = GetVolumeDataBounded(volumeData, x, y, z + 1);
+
+							// Compute the gradient.
+							volumeGradients[index] = v2 - v1;
+							if (volumeGradients[index] != Vector3.Zero)
+								volumeGradients[index] = Vector3.Normalize(volumeGradients[index]);
+
+							Debug.Assert(!float.IsNaN(volumeGradients[index].X));
+							index++;
+						}
+
+				// Save the gradients in binary format to a file so we don't have to recompute them again.
+				FileStream file = new FileStream(gradientFile, FileMode.Create);
+				BinaryWriter writer = new BinaryWriter(file);
+
+				for (int i = 0; i < volumeGradients.Length; ++i)
+				{
+					writer.Write(volumeGradients[i].X);
+					writer.Write(volumeGradients[i].Y);
+					writer.Write(volumeGradients[i].Z);
+				}
+
+				writer.Close();
+				file.Close();
+			}
+
+			// Pack the gradients and isovalues into a 16-bit Vector4 (accuracy should be sufficient, 
+			// but with half the memory usage).
+			textureData = new HalfVector4[width * height * depth];
+			for (int i = 0; i < textureData.Length; ++i)
+				textureData[i] = new HalfVector4(volumeGradients[i].X, volumeGradients[i].Y, volumeGradients[i].Z, volumeData[i]);
 		}
 
 		/// <summary>
 		/// Gets the volume data at the specified x,y,z point, making sure that the point stays 
 		/// within the bounds of the volume.
 		/// </summary>
-		private float GetVolumeDataBounded(int x, int y, int z)
+		private float GetVolumeDataBounded(float[] volumeData, int x, int y, int z)
 		{
 			x = (int)MathHelper.Clamp(x, 0, width - 1);
 			y = (int)MathHelper.Clamp(y, 0, height - 1);
