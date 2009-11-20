@@ -366,7 +366,6 @@ namespace Renderer.Graphics
                 else //no suitable format found
                 {
                     Debug.Assert(false, "Hardware must be SM 3.0 compliant and support RGBA16F, RGBA32F, or RGBA64. Error creating position render targets");
-                    Game.Exit();
                 }
 
                 front2DTex = new RenderTarget2D(VolumetricRenderer.Game.GraphicsDevice, pp.BackBufferWidth, pp.BackBufferHeight,
