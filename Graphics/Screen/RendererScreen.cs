@@ -53,11 +53,15 @@ namespace Renderer.Graphics.Screen
             volumetricModel.effectAssetName = "..\\..\\Shaders\\effects";
             volumetricModel.StepScale = 0.5f;
             volumetricModel.scale = 5.0f;
-#if DEBUG
-            volumetricModel.drawWireframeBox = true;
-#else
-            volumetricModel.drawWireframeBox = false;
-#endif
+
+			volumetricModel.drawWireframeBox = false;
+			Debug.Execute(delegate() { volumetricModel.drawWireframeBox = true; });
+
+//#if DEBUG
+//            volumetricModel.drawWireframeBox = true;
+//#else
+//            volumetricModel.drawWireframeBox = false;
+//#endif
 			volumetricModel.TransferPoints = new TransferControlPoints(3, 4);
 
 			// TODO: Experimentally determine the real transfer points when the model is finally visible.
@@ -78,7 +82,7 @@ namespace Renderer.Graphics.Screen
 
             VolumetricRenderer.Game.Components.Add(volumetricModel);
 
-			// The volumetric model takes awhile to load (mostly due to VolumetricModel.ComputeGradients()) 
+			// The volumetric model takes awhile to load (mostly due to VolumetricModel.CreateTextureData()) 
 			// so reset the elapsed time so that our screen transition works properly.
 			VolumetricRenderer.Game.ResetElapsedTime();
 

@@ -34,12 +34,12 @@ namespace Renderer
         private Camera camera;
 
 		private volatile GameTime gameTime;
-		private Thread mainThread;
-		private Thread updateThread;
-		private Thread drawThread;
-		private Thread handleAssertThread;
-		private object updateLock;
-		private object drawLock;
+		public Thread mainThread;			// This should be private normally, but the compiler is retarded and throws error CS0169 if it's not used.
+		public Thread updateThread;			// This should be private normally, but the compiler is retarded and throws error CS0169 if it's not used.
+		public Thread drawThread;			// This should be private normally, but the compiler is retarded and throws error CS0169 if it's not used.
+		public Thread handleAssertThread;	// This should be private normally, but the compiler is retarded and throws error CS0169 if it's not used.
+		public object updateLock;			// This should be private normally, but the compiler is retarded and throws error CS0169 if it's not used.
+		public object drawLock;				// This should be private normally, but the compiler is retarded and throws error CS0169 if it's not used.
 		private UpdateMethod updateMethod;
 		private DrawMethod drawMethod;
 		private bool assertHandled;
@@ -74,7 +74,7 @@ namespace Renderer
 		}
 
         /// <summary>
-        /// Gets the Camera instance for this screen.
+        /// Gets the Camera instance for this game.
         /// </summary>
         public Camera Camera
         {
@@ -87,23 +87,23 @@ namespace Renderer
 		public VolumetricRendererGame()
 		{
 			Debug.OnAssert += new EventHandler<DebugEventArgs>(HandleAssert);
-			Debug.BlockAfterAssert = true;
+			//Debug.BlockAfterAssert = true;
 
 			// Set up and run initial threads.
-			mainThread = Thread.CurrentThread;
-			mainThread.Name = "Main";
+			//mainThread = Thread.CurrentThread;
+			//mainThread.Name = "Main";
 
-			updateLock = new object();
-			updateThread = new Thread(new ThreadStart(UpdateThread));
-			updateThread.Name = "Update";
-			updateThread.IsBackground = true;
-			updateThread.Start();
+			//updateLock = new object();
+			//updateThread = new Thread(new ThreadStart(UpdateThread));
+			//updateThread.Name = "Update";
+			//updateThread.IsBackground = true;
+			//updateThread.Start();
 
-			drawLock = new object();
-			drawThread = new Thread(new ThreadStart(DrawThread));
-			drawThread.Name = "Draw";
-			drawThread.IsBackground = true;
-			drawThread.Start();
+			//drawLock = new object();
+			//drawThread = new Thread(new ThreadStart(DrawThread));
+			//drawThread.Name = "Draw";
+			//drawThread.IsBackground = true;
+			//drawThread.Start();
 
 			// Set up the game.
 			updateMethod = Update_Normal;
@@ -152,7 +152,8 @@ namespace Renderer
 			input.Update();
             camera.Update();
 
-			updateMethod(gameTime);
+			//updateMethod(gameTime);
+			base.Update(gameTime);
 		}
 
 		/// <summary>
@@ -207,7 +208,8 @@ namespace Renderer
 		{
 			this.gameTime = gameTime;
 
-			drawMethod(gameTime);
+			//drawMethod(gameTime);
+			base.Draw(gameTime);
 		}
 
 		/// <summary>
@@ -270,10 +272,11 @@ namespace Renderer
 
 			// This method is running on the thread that asserted, so start a new thread for the 
 			// handler so it can kill off all the worker threads without killing itself.
-			handleAssertThread = new Thread(new ParameterizedThreadStart(HandleAssertThread));
-			handleAssertThread.Name = "HandleAssert";
-			handleAssertThread.IsBackground = true;
-			handleAssertThread.Start(args);
+			//handleAssertThread = new Thread(new ParameterizedThreadStart(HandleAssertThread));
+			//handleAssertThread.Name = "HandleAssert";
+			//handleAssertThread.IsBackground = true;
+			//handleAssertThread.Start(args);
+			HandleAssertThread(args);
 		}
 
 		/// <summary>
@@ -285,9 +288,9 @@ namespace Renderer
 			DebugEventArgs args = (DebugEventArgs)obj;
 
 			// Abort all worker threads, and give them plenty of time to do so.
-			updateThread.Abort();
-			drawThread.Abort();
-			Thread.Sleep(TimeSpan.FromSeconds(2));
+			//updateThread.Abort();
+			//drawThread.Abort();
+			//Thread.Sleep(TimeSpan.FromSeconds(2));
 
 			Components.Clear();
 			Components.Add(screenManager);
@@ -296,7 +299,7 @@ namespace Renderer
 			screenManager.AddScreen(new AssertScreen(args));
 
 			assertHandled = true;
-			Debug.UnblockAssert();
+			//Debug.UnblockAssert();
 		}
 		#endregion
     }
