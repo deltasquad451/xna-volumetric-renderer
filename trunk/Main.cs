@@ -209,6 +209,7 @@ namespace Renderer
 			this.gameTime = gameTime;
 
 			//drawMethod(gameTime);
+			GraphicsDevice.Clear(Color.Black);
 			base.Draw(gameTime);
 		}
 
