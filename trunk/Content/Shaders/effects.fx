@@ -21,6 +21,9 @@ float3 CameraPosition;
 float3 StepSize;
 int Iterations;
 
+float BaseSampleDist = .5f;
+float ActualSampleDist = .5f;
+
 int Side = 2;
 
 float4 ScaleFactor;
@@ -28,6 +31,7 @@ float4 ScaleFactor;
 texture2D Front;
 texture2D Back;
 texture3D Volume;
+texture2D Transfer;
 
 //------- Texture Samplers --------
 
@@ -68,6 +72,17 @@ sampler3D VolumeS = sampler_state
     BorderColor = float4(0,0,0,0);	// outside of border should be black
 };
 
+sampler1D TransferS = sampler_state
+{
+	Texture = <Transfer>;
+	MinFilter = LINEAR;
+	MagFilter = LINEAR;
+	MipFilter = LINEAR;
+	
+	AddressU  = CLAMP;
+    AddressV  = CLAMP;
+};
+
 //------- Technique: RayCast --------
 
 VertexShaderOutput PositionVS(VertexShaderInput input)
@@ -106,15 +121,10 @@ float4 RayCastPS(VertexShaderOutput input) : COLOR0
     float3 dir = normalize(back - front);
     float4 pos = float4(front, 0);
     
-    //float4 pos = (input.pos.xyz, 0);
-    //input.pos.xyz /= input.pos.w;
-    //input.pos.w = 1;
-    //float3 dir = normalize(input.pos);
-    
     float4 dst = float4(0, 0, 0, 0);
     float4 src = 0;
     
-    float value = 0;
+    float4 value = 0;
 	
 	float3 Step = dir * StepSize;
     
@@ -122,21 +132,21 @@ float4 RayCastPS(VertexShaderOutput input) : COLOR0
     {
 		pos.w = 0;
 		
-		// BB - use this for volumes containing floating point values 
-		//value = tex3Dlod(VolumeS, pos).r;
-		//src = (float4)value;
+		// Opacity value is stored in the alpha channel, XYZ partial gradients are stored in RGB channels
+		value = tex3Dlod(VolumeS, pos);
 		
-		// BB - our volume uses half vectors
-		value = tex3Dlod(VolumeS, pos).a;
-		src = (float4)value;
+		// Use the transfer function to get new RGBA values
+		src = tex1Dlod(TransferS, value.a);
+		
+		// Opacity correction for varying ray cast sample distances
+		src.a = 1 - pow((1 - src.a), ActualSampleDist / BaseSampleDist);
+
+		//float s = dot(value.xyz, float3(0, 1, 1));
 				
-		//src.a *= .1f; //reduce the alpha to have a more transparent result
-					  //this needs to be adjusted based on the step size
-					  //i.e. the more steps we take, the faster the alpha will grow	
-			
+		//diffuse shading + fake ambient lighting
+		//src.rgb = s * src.rgb + .1f * src.rgb;
+
 		//Front to back blending
-		// dst.rgb = dst.rgb + (1 - dst.a) * src.a * src.rgb
-		// dst.a   = dst.a   + (1 - dst.a) * src.a		
 		src.rgb *= src.a;
 		dst = (1.0f - dst.a)*src + dst;		
 		
