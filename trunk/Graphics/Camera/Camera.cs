@@ -28,7 +28,7 @@ namespace Renderer.Graphics.Camera
             fov = MathHelper.ToRadians(60.0f);
             projectionMat = Matrix.CreatePerspectiveFieldOfView(fov, aspectRatio,
                                                     NEAR_PLANE_DIST, FAR_PLANE_DIST);
-            position = new Vector3(2.5f, 2.5f, -3.0f);
+            position = new Vector3(2.5f, 2.5f, -7.0f);
             target = new Vector3(2.5f, 2.5f, 2.5f);
         }
         #endregion
