@@ -36,7 +36,7 @@ namespace Renderer.Graphics.Camera
         #region Methods
         public void Update()
         {
-            viewMat = Matrix.CreateLookAt(position, target, Vector3.Down);
+            viewMat = Matrix.CreateLookAt(position, target, Vector3.Up);
         }
         #endregion
     }
