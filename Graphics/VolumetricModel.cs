@@ -26,6 +26,7 @@ namespace Renderer.Graphics
         #region Fields
         protected RenderTarget2D front2DTex;
         protected RenderTarget2D back2DTex;
+        protected Texture2D transfer2DTex;
         public string volumeAssetName { get; set; }
         protected Texture3D volumeTexture { get; set; }
         protected int width;
@@ -175,7 +176,8 @@ namespace Renderer.Graphics
             float maxSideLength = (float)Math.Max(width, Math.Max(height, depth));
             Vector3 stepSize = new Vector3(1.0f / maxSideLength, 1.0f / maxSideLength, 1.0f / maxSideLength);
 
-            effect.Parameters["StepSize"].SetValue(stepSize);
+            effect.Parameters["StepSize"].SetValue(stepSize * stepScale);
+            effect.Parameters["ActualSampleDist"].SetValue(stepScale);
             effect.Parameters["Iterations"].SetValue((int)maxSideLength * (1.0f / stepScale) * 2.0f);
 
             Vector3 sizes = new Vector3(width, height, depth);
@@ -197,10 +199,13 @@ namespace Renderer.Graphics
 			volumeTexture = new Texture3D(VolumetricRenderer.Game.GraphicsDevice, width, height, depth, 0,
 				TextureUsage.None, SurfaceFormat.HalfVector4);
             volumeTexture.SetData<HalfVector4>(textureData);
-            //volumeTexture = new Texture3D(VolumetricRenderer.Game.GraphicsDevice, width, height, depth, 0,
-            //    TextureUsage.None, SurfaceFormat.Single);
-            //volumeTexture.SetData(volumeData);
+
             effect.Parameters["Volume"].SetValue(volumeTexture);
+
+            if (transfer2DTex != null)
+            {
+                effect.Parameters["Transfer"].SetValue(transfer2DTex);
+            }
         }
 
 		/// <summary>
@@ -405,13 +410,23 @@ namespace Renderer.Graphics
 
 		#region Methods
 		/// <summary>
-		/// Creates a transfer function from volume's color and alpha transfer points.
+		/// Creates a transfer function from volume's color and alpha transfer points, saves the function
+        /// as a texture, and sends it to the shader.
 		/// </summary>
 		public void CreateTransferFunction()
 		{
 			transferFunc = Transfer.CreateTransferFunction(transferPoints);
 
-			// TODO: Convert the color array into a texture for use in a shader?
+            transfer2DTex = new Texture2D(VolumetricRenderer.Game.GraphicsDevice, 256, 1, 1, TextureUsage.Linear, SurfaceFormat.Color);
+
+            // Texture2D's SetData function needs the data ordered as BGRA
+            Byte4[] transferTex = new Byte4[256];
+            for (int i = 0; i < 256; ++i)
+            {
+                transferTex[i] = new Byte4(transferFunc[i].B, transferFunc[i].G, transferFunc[i].R, transferFunc[i].A);
+            }
+
+            transfer2DTex.SetData(transferTex);
 		}
 
         private bool isFormatSupported(SurfaceFormat format)

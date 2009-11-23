@@ -66,16 +66,17 @@ namespace Renderer.Graphics.Screen
 
 			// TODO: Experimentally determine the real transfer points when the model is finally visible.
 			// Add the color transfer points.
-			volumetricModel.TransferPoints.AddRGBControlPoint(Color.Black, 0);		// TEMP
-			volumetricModel.TransferPoints.AddRGBControlPoint(Color.Aqua, 100);		// TEMP
-			volumetricModel.TransferPoints.AddRGBControlPoint(Color.White, 255);	// TEMP
+			volumetricModel.TransferPoints.AddRGBControlPoint(Color.Black, 0);		    // TEMP
+			volumetricModel.TransferPoints.AddRGBControlPoint(Color.MidnightBlue, 125);	// TEMP
+			volumetricModel.TransferPoints.AddRGBControlPoint(Color.White, 255);	    // TEMP
 
 			// TODO: Experimentally determine the real transfer points when the model is finally visible.
 			// Add the alpha transfer points.
 			volumetricModel.TransferPoints.AddAlphaControlPoint(0f, 0);				// TEMP
-			volumetricModel.TransferPoints.AddAlphaControlPoint(0.5f, 100);			// TEMP
-			volumetricModel.TransferPoints.AddAlphaControlPoint(0.8f, 200);			// TEMP
-			volumetricModel.TransferPoints.AddAlphaControlPoint(0f, 255);			// TEMP
+			volumetricModel.TransferPoints.AddAlphaControlPoint(0.09f, 100);		// TEMP
+			volumetricModel.TransferPoints.AddAlphaControlPoint(1.0f, 125);		// TEMP
+            volumetricModel.TransferPoints.AddAlphaControlPoint(0.09f, 150);		// TEMP
+            volumetricModel.TransferPoints.AddAlphaControlPoint(0.09f, 255); 		// TEMP
 
 			// Create the transfer function.
 			volumetricModel.CreateTransferFunction();
