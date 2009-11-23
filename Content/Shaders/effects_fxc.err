@@ -1,2 +1,0 @@
-C:\Users\Evan\Documents\Visual Studio 2008\Projects\USC\CSCI 580\VolumetricRenderer\Content\Shaders\effects.fx(126,12): warning X4121: gradient-based operations must be moved out of flow control to prevent divergence. Performance may improve by using a non-gradient operation
-

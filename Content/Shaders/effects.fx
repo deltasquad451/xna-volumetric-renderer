@@ -92,44 +92,24 @@ float4 WireFramePS(VertexShaderOutput input) : COLOR0
     return float4(1.0f, .5f, 0.0f, .85f);
 }
 
-//draws the front or back positions, or the ray direction through the volume
-float4 DirectionPS(VertexShaderOutput input) : COLOR0
-{
-	float2 texC = input.pos.xy /= input.pos.w;
-	texC.x =  0.5f*texC.x + 0.5f; 
-	texC.y = -0.5f*texC.y + 0.5f;
-	
-    float3 front = tex2D(FrontS, texC).rgb;
-    float3 back = tex2D(BackS, texC).rgb;
-	
-	if(Side == 0)
-	{
-		return float4(front, .9f);
-	}
-	if(Side == 1)
-	{
-		return float4(back, .9f);
-	}
-    
-    return float4(back - front, .9f);
-}
-
 float4 RayCastPS(VertexShaderOutput input) : COLOR0
 {   
 	//calculate projective texture coordinates
 	//used to project the front and back position textures onto the cube
 	float2 texC = input.pos.xy /= input.pos.w;
-	texC.x =  0.5f*texC.x + 0.5f; 
-	texC.y = -0.5f*texC.y + 0.5f;  
+	texC.x = 0.5f*texC.x + 0.5f; 
+	texC.y = 0.5f*texC.y + 0.5f;  
 	
     float3 front = tex2D(FrontS, texC);
     float3 back = tex2D(BackS, texC);
     
     float3 dir = normalize(back - front);
     float4 pos = float4(front, 0);
-    //float4 pixelPos = mul(input.pos, WorldViewProjection);
-    //float3 dir = normalize(pixelPos - CameraPosition);
-    //float4 pos = (pixelPos.xyz, 0);
+    
+    //float4 pos = (input.pos.xyz, 0);
+    //input.pos.xyz /= input.pos.w;
+    //input.pos.w = 1;
+    //float3 dir = normalize(input.pos);
     
     float4 dst = float4(0, 0, 0, 0);
     float4 src = 0;
@@ -147,9 +127,10 @@ float4 RayCastPS(VertexShaderOutput input) : COLOR0
 		//src = (float4)value;
 		
 		// BB - our volume uses half vectors
-		src = tex3Dlod(VolumeS, pos);
+		value = tex3Dlod(VolumeS, pos).a;
+		src = (float4)value;
 				
-		src.a *= .1f; //reduce the alpha to have a more transparent result
+		//src.a *= .1f; //reduce the alpha to have a more transparent result
 					  //this needs to be adjusted based on the step size
 					  //i.e. the more steps we take, the faster the alpha will grow	
 			
@@ -180,15 +161,6 @@ technique RenderPosition
     {		
         VertexShader = compile vs_2_0 PositionVS();
         PixelShader = compile ps_2_0 PositionPS();
-    }
-}
-
-technique RayCastDirection
-{
-    pass Pass1
-    {		
-        VertexShader = compile vs_2_0 PositionVS();
-        PixelShader = compile ps_2_0 DirectionPS();
     }
 }
 
