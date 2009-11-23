@@ -73,9 +73,9 @@ namespace Renderer.Graphics.Screen
 			// TODO: Experimentally determine the real transfer points when the model is finally visible.
 			// Add the alpha transfer points.
 			volumetricModel.TransferPoints.AddAlphaControlPoint(0f, 0);				// TEMP
-			volumetricModel.TransferPoints.AddAlphaControlPoint(0.09f, 100);		// TEMP
+			volumetricModel.TransferPoints.AddAlphaControlPoint(0.1f, 75);		// TEMP
 			volumetricModel.TransferPoints.AddAlphaControlPoint(1.0f, 125);		// TEMP
-            volumetricModel.TransferPoints.AddAlphaControlPoint(0.09f, 150);		// TEMP
+            volumetricModel.TransferPoints.AddAlphaControlPoint(0.1f, 175);		// TEMP
             volumetricModel.TransferPoints.AddAlphaControlPoint(0.09f, 255); 		// TEMP
 
 			// Create the transfer function.

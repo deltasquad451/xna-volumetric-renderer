@@ -141,9 +141,8 @@ float4 RayCastPS(VertexShaderOutput input) : COLOR0
 		// Opacity correction for varying ray cast sample distances
 		src.a = 1 - pow((1 - src.a), ActualSampleDist / BaseSampleDist);
 
-		//float s = dot(value.xyz, float3(0, 1, 1));
-				
 		//diffuse shading + fake ambient lighting
+		//float s = dot(value.xyz, float3(0, 1, 1));
 		//src.rgb = s * src.rgb + .1f * src.rgb;
 
 		//Front to back blending
