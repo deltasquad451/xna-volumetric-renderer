@@ -68,6 +68,7 @@ namespace Renderer.Graphics.Screen
 			// Add the color transfer points.
 			volumetricModel.TransferPoints.AddRGBControlPoint(Color.Black, 0);		    // TEMP
 			volumetricModel.TransferPoints.AddRGBControlPoint(Color.MidnightBlue, 125);	// TEMP
+            volumetricModel.TransferPoints.AddRGBControlPoint(Color.MistyRose, 205);	// TEMP
 			volumetricModel.TransferPoints.AddRGBControlPoint(Color.White, 255);	    // TEMP
 
 			// TODO: Experimentally determine the real transfer points when the model is finally visible.
