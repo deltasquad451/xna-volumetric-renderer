@@ -51,26 +51,54 @@ namespace Renderer.Graphics.Camera
                 viewMat = Matrix.CreateLookAt(position, target, Vector3.Up);
             }
             if (currentKeyboardState.IsKeyDown(Keys.Left)){
-                camx -= 0.5f;
-                camz += 0.5f;
-                //if (camx > -3.0f) { camx = -3.0f; }
-                if (camx < -30.0f) { camx = -30.0f; }
-                if (camz > -3.0f) { camz = -3.0f; }
-                if (camz < -30.0f) { camz = -30.0f; }
+                if (camx >= 2.5f && camz <= 2.5f)
+                {
+                    camx -= 0.5f;
+                    camz -= 0.5f;
+                }
+                else if (camx >= 2.5f && camz >= 2.5f)
+                {
+                    camx += 0.5f;
+                    camz -= 0.5f;
+                }
+                else if (camx <= 2.5f && camz >= 2.5f)
+                {
+                    camx += 0.5f;
+                    camz += 0.5f;
+                }
+                else if (camx <= 2.5f && camz <= 2.5f)
+                {
+                    camx -= 0.5f;
+                    camz += 0.5f;
+                }
+                
                 position = new Vector3(camx, camy, camz);
-                //target = new Vector3(camx, 2.5f, 2.5f);
                 viewMat = Matrix.CreateLookAt(position, target, Vector3.Up);
                 keyflag = 1;
             }
             else if (currentKeyboardState.IsKeyDown(Keys.Right)){
-                camx += 0.5f;
-                camz -= 0.5f;
-                //if (camx > -3.0f) { camx = -3.0f; }
-                if (camx < -30.0f) { camx = -30.0f; }
-                if (camz > -3.0f) { camz = -3.0f; }
-                if (camz < -30.0f) { camz = -30.0f; }
+                if (camx >= 2.5f && camz <= 2.5f)
+                {
+                    camx += 0.5f;
+                    camz += 0.5f;
+                }
+                else if (camx >= 2.5f && camz >= 2.5f)
+                {
+                    camx -= 0.5f;
+                    camz += 0.5f;
+                }
+                else if (camx <= 2.5f && camz >= 2.5f)
+                {
+                    camx -= 0.5f;
+                    camz -= 0.5f;
+                }
+                else if (camx <= 2.5f && camz <= 2.5f)
+                {
+                    camx += 0.5f;
+                    camz -= 0.5f;
+                }
+                
                 position = new Vector3(camx, camy, camz);
-                //target = new Vector3(camx, 2.5f, 2.5f);
                 viewMat = Matrix.CreateLookAt(position, target, Vector3.Up);
                 keyflag = 1;
             }
