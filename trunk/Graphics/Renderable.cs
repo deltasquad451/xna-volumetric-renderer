@@ -179,12 +179,11 @@ namespace Renderer.Graphics
                 Matrix worldRootBoneInverseMat = Matrix.Invert(worldRootBoneMat);
                 worldRootBoneInverseMat = Matrix.Transpose(worldRootBoneInverseMat);
 
-                effect.Parameters["World"].SetValue(worldMat);
+                effect.Parameters["World"].SetValue(worldRootBoneMat);
                 effect.Parameters["WorldInverseTransform"].SetValue(worldRootBoneInverseMat);
-                effect.Parameters["WorldViewProjection"].SetValue(worldMat *
+                effect.Parameters["WorldViewProjection"].SetValue(worldRootBoneMat *
                                                 VolumetricRenderer.Game.Camera.viewMat *
                                                 VolumetricRenderer.Game.Camera.projectionMat);
-                effect.Parameters["CameraPosition"].SetValue(VolumetricRenderer.Game.Camera.viewMat.Translation);
 
                 VolumetricRenderer.Game.GraphicsDevice.Indices = mesh.IndexBuffer;
 
