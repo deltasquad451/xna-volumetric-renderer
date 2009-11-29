@@ -150,7 +150,7 @@ namespace Renderer
 		{
 			this.gameTime = gameTime;
 			input.Update();
-            camera.Update();
+            camera.Update(gameTime);
 
 			//updateMethod(gameTime);
 			base.Update(gameTime);

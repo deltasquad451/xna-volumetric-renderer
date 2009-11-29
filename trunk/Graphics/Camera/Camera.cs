@@ -12,6 +12,10 @@ namespace Renderer.Graphics.Camera
         #region Fields
         private const float NEAR_PLANE_DIST = 0.1f;
         private const float FAR_PLANE_DIST = 100.0f;
+        private const float SPEED = 4.0f;
+        private const float ANGULAR_SPEED = (float)Math.PI/10.0f;
+        private const float MIN_DIST = 5.0f;
+        private const float MAX_DIST = 30.0f;
 
         public Vector3 position { get; set; }
         public Vector3 target {get; set; }
@@ -19,10 +23,6 @@ namespace Renderer.Graphics.Camera
         public Matrix projectionMat { get; private set; }
         public float fov { get; private set; }
         public float aspectRatio { get; private set; }
-        public int keyflag = 0;
-        public float camx = 2.5f;
-        public float camy = 2.5f;
-        public float camz = -7.0f;
 
         private KeyboardState currentKeyboardState;
 
@@ -42,92 +42,53 @@ namespace Renderer.Graphics.Camera
         #endregion
 
         #region Methods
-        public void Update()
+        public void Update(GameTime gameTime)
         {
             currentKeyboardState = Keyboard.GetState();
 
-            if (keyflag == 0)
-            {
-                viewMat = Matrix.CreateLookAt(position, target, Vector3.Up);
-            }
             if (currentKeyboardState.IsKeyDown(Keys.Left)){
-                if (camx >= 2.5f && camz <= 2.5f)
-                {
-                    camx -= 0.5f;
-                    camz -= 0.5f;
-                }
-                else if (camx >= 2.5f && camz >= 2.5f)
-                {
-                    camx += 0.5f;
-                    camz -= 0.5f;
-                }
-                else if (camx <= 2.5f && camz >= 2.5f)
-                {
-                    camx += 0.5f;
-                    camz += 0.5f;
-                }
-                else if (camx <= 2.5f && camz <= 2.5f)
-                {
-                    camx -= 0.5f;
-                    camz += 0.5f;
-                }
-                
-                position = new Vector3(camx, camy, camz);
-                viewMat = Matrix.CreateLookAt(position, target, Vector3.Up);
-                keyflag = 1;
+                Matrix rotationY;
+                Matrix.CreateRotationY((float)gameTime.ElapsedGameTime.TotalSeconds * ANGULAR_SPEED, out rotationY);
+                Vector4 targetToPos = new Vector4(position - target, 0);
+                targetToPos = Vector4.Transform(targetToPos, rotationY);
+                position = new Vector3(target.X + targetToPos.X, target.Y + targetToPos.Y, target.Z + targetToPos.Z);
             }
             else if (currentKeyboardState.IsKeyDown(Keys.Right)){
-                if (camx >= 2.5f && camz <= 2.5f)
-                {
-                    camx += 0.5f;
-                    camz += 0.5f;
-                }
-                else if (camx >= 2.5f && camz >= 2.5f)
-                {
-                    camx -= 0.5f;
-                    camz += 0.5f;
-                }
-                else if (camx <= 2.5f && camz >= 2.5f)
-                {
-                    camx -= 0.5f;
-                    camz -= 0.5f;
-                }
-                else if (camx <= 2.5f && camz <= 2.5f)
-                {
-                    camx += 0.5f;
-                    camz -= 0.5f;
-                }
-                
-                position = new Vector3(camx, camy, camz);
-                viewMat = Matrix.CreateLookAt(position, target, Vector3.Up);
-                keyflag = 1;
+                Matrix rotationY;
+                Matrix.CreateRotationY((float)gameTime.ElapsedGameTime.TotalSeconds * -ANGULAR_SPEED, out rotationY);
+                Vector4 targetToPos = new Vector4(position - target, 0);
+                targetToPos = Vector4.Transform(targetToPos, rotationY);
+                position = new Vector3(target.X + targetToPos.X, target.Y + targetToPos.Y, target.Z + targetToPos.Z);
             }
             else if (currentKeyboardState.IsKeyDown(Keys.Up))
             {
-                camz += 0.5f;
-                if (camz > -3.0f) { camz = -3.0f; }
-                if (camz < -30.0f){camz = -30.0f;}
-                position = new Vector3(camx, camy, camz); 
-                viewMat = Matrix.CreateLookAt(position, target, Vector3.Up);
-                keyflag = 1;
+                Vector3 targetToPos = position - target;
+                float newLength = targetToPos.Length() - ((float)gameTime.ElapsedGameTime.TotalSeconds * SPEED);
+                if (newLength < MIN_DIST)
+                {
+                    newLength = MIN_DIST;
+                }
+                targetToPos.Normalize();
+                position = target + Vector3.Multiply(targetToPos, newLength);
             }
             else if (currentKeyboardState.IsKeyDown(Keys.Down))
             {
-                camz -= 0.5f;
-                if (camz > -3.0f){camz = -3.0f;}
-                if (camz < -30.0f){camz = -30.0f;}
-                position = new Vector3(camx, camy, camz); 
-                viewMat = Matrix.CreateLookAt(position, target, Vector3.Up);
-                keyflag = 1;
+                Vector3 targetToPos = position - target;
+                float newLength = targetToPos.Length() + ((float)gameTime.ElapsedGameTime.TotalSeconds * SPEED);
+                if (newLength > MAX_DIST)
+                {
+                    newLength = MAX_DIST;
+                }
+                targetToPos.Normalize();
+                position = target + Vector3.Multiply(targetToPos, newLength);
             }
             else if (currentKeyboardState.IsKeyDown(Keys.Space))
             {
-                camx = 2.5f; camy = 2.5f; camz = -7.0f;
-                position = new Vector3(camx, camy, camz);
-                target = new Vector3(camx, camy, 2.5f); 
-                viewMat = Matrix.CreateLookAt(position, target, Vector3.Up);
-                keyflag = 1;
+                position = new Vector3(2.5f, 2.5f, -7.0f);
+                target = new Vector3(2.5f, 2.5f, 2.5f);  
             }
+
+            viewMat = Matrix.CreateLookAt(position, target, Vector3.Up);
         }
         #endregion
     }
