@@ -51,7 +51,7 @@ namespace Renderer.Graphics.Screen
 
             volumetricModel = new VolumetricModel(VolumetricRenderer.Game, "..\\..\\..\\BostonTeapot.raw", 256, 256, 178);
             volumetricModel.effectAssetName = "..\\..\\Shaders\\effects";
-            volumetricModel.StepScale = 0.5f;
+            volumetricModel.StepScale = 0.25f;
             volumetricModel.scale = 5.0f;
 
 			volumetricModel.drawWireframeBox = false;

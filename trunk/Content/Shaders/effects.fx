@@ -110,14 +110,19 @@ float4 RayCastPS(VertexShaderOutput input) : COLOR0
 {   
 	//calculate projective texture coordinates
 	//used to project the front and back position textures onto the cube
-	float2 texC = input.pos.xy /= input.pos.w;
-	texC.x = 0.5f*texC.x + 0.5f; 
+	float2 texC = input.pos.xy /= input.pos.w; // input.pos is the position in image space
+	texC.x = 0.5f*texC.x + 0.5f; // texC is the position in screen space
 	texC.y = 0.5f*texC.y + 0.5f;  
 	
-    float3 front = tex2D(FrontS, texC);
-    float3 back = tex2D(BackS, texC);
+    float3 front = tex2D(FrontS, texC); // Position of pixel on front cube face in image space
+    //float3 back = tex2D(BackS, texC); // Position of pixel on back cube face in image space
     
-    float3 dir = normalize(back - front);
+    //float3 dir = normalize(back - front);
+    //float4 pos = float4(front, 0);
+    
+    float3 dir = float3(0, 0, 1);
+    dir = mul(WorldViewProjection, dir);
+    //float3 dir = normalize(front);
     float4 pos = float4(front, 0);
     
     float4 dst = float4(0, 0, 0, 0);
@@ -157,7 +162,7 @@ float4 RayCastPS(VertexShaderOutput input) : COLOR0
 		pos.xyz += Step;
 		
 		//break if the position is greater than <1, 1, 1>
-		if(pos.x > 1.0f || pos.y > 1.0f || pos.z > 1.0f)
+		if(abs(pos.x) > 5.0f || abs(pos.y) > 5.0f || abs(pos.z) > 5.0f)
 			i = Iterations; // effectively a "break"
     }
 

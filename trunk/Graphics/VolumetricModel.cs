@@ -158,6 +158,11 @@ namespace Renderer.Graphics
             this.height = height;
             this.depth = depth;
 
+#if DEBUG
+            drawWireframeBox = true;
+#else
+            drawWireframeBox = false;
+#endif
 			//colorPoints = new List<TransferPoint>();
 			//alphaPoints = new List<TransferPoint>();
         }
