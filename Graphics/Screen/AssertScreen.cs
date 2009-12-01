@@ -166,7 +166,7 @@ namespace Renderer.Graphics.Screen
 		{
 			base.HandleInput(input);
 
-			if (input.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.Enter, PlayerIndex.One))
+			if (input.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.Enter))
 				ScreenManager.Game.Exit();
 		}
 		#endregion

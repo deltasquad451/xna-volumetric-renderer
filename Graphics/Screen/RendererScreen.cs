@@ -11,6 +11,7 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using Renderer.Diagnostics;
 using Renderer.Input;
 #endregion
@@ -28,6 +29,10 @@ namespace Renderer.Graphics.Screen
 		private SpriteFont font;
 		private SpriteBatch spriteBatch;
         private VolumetricModel volumetricModel;
+
+		private byte isoValue;
+		private float alphaValue;
+		private int range;
 		#endregion
 
         #region Properties
@@ -39,6 +44,10 @@ namespace Renderer.Graphics.Screen
 		{
 			TransitionOnTime = TimeSpan.FromSeconds(0.25);
             VolumetricRenderer.Game.GraphicsDevice.RenderState.CullMode = CullMode.CullClockwiseFace;
+
+			isoValue = 40;
+			alphaValue = 0.1f;
+			range = 90;
 		}
 
 		public override void LoadContent()
@@ -54,30 +63,27 @@ namespace Renderer.Graphics.Screen
             volumetricModel.StepScale = 0.25f;
             volumetricModel.scale = 5.0f;
 
-			volumetricModel.drawWireframeBox = false;
 			Debug.Execute(delegate() { volumetricModel.drawWireframeBox = true; });
 
-//#if DEBUG
-//            volumetricModel.drawWireframeBox = true;
-//#else
-//            volumetricModel.drawWireframeBox = false;
-//#endif
-			volumetricModel.TransferPoints = new TransferControlPoints(3, 4);
+			volumetricModel.TransferPoints = new TransferControlPoints(10, 10);
 
-			// TODO: Experimentally determine the real transfer points when the model is finally visible.
 			// Add the color transfer points.
-			volumetricModel.TransferPoints.AddRGBControlPoint(Color.Black, 0);		    // TEMP
-			volumetricModel.TransferPoints.AddRGBControlPoint(Color.MidnightBlue, 125);	// TEMP
-            volumetricModel.TransferPoints.AddRGBControlPoint(Color.MistyRose, 205);	// TEMP
-			volumetricModel.TransferPoints.AddRGBControlPoint(Color.White, 255);	    // TEMP
+			volumetricModel.TransferPoints.AddRGBControlPoint(Color.Red, 0);
+			volumetricModel.TransferPoints.AddRGBControlPoint(Color.Red, 1);
+			volumetricModel.TransferPoints.AddRGBControlPoint(Color.Red, 255);
 
-			// TODO: Experimentally determine the real transfer points when the model is finally visible.
 			// Add the alpha transfer points.
-			volumetricModel.TransferPoints.AddAlphaControlPoint(0f, 0);				// TEMP
-			volumetricModel.TransferPoints.AddAlphaControlPoint(0.1f, 75);		// TEMP
-			volumetricModel.TransferPoints.AddAlphaControlPoint(1.0f, 125);		// TEMP
-            volumetricModel.TransferPoints.AddAlphaControlPoint(0.1f, 175);		// TEMP
-            volumetricModel.TransferPoints.AddAlphaControlPoint(0.09f, 255); 		// TEMP
+			volumetricModel.TransferPoints.AddAlphaControlPoint(0f, 0);
+			volumetricModel.TransferPoints.AddAlphaControlPoint(0f, (byte)(isoValue - 2));
+			volumetricModel.TransferPoints.AddAlphaControlPoint(alphaValue, isoValue);
+			volumetricModel.TransferPoints.AddAlphaControlPoint(alphaValue, (byte)(isoValue + range));
+			volumetricModel.TransferPoints.AddAlphaControlPoint(0f, (byte)(isoValue + range + 2));
+			volumetricModel.TransferPoints.AddAlphaControlPoint(0f, 255);
+			//volumetricModel.TransferPoints.AddAlphaControlPoint(0f, 0);
+			//volumetricModel.TransferPoints.AddAlphaControlPoint(0.1f, 75);
+			//volumetricModel.TransferPoints.AddAlphaControlPoint(1.0f, 125);
+			//volumetricModel.TransferPoints.AddAlphaControlPoint(0.1f, 175);
+			//volumetricModel.TransferPoints.AddAlphaControlPoint(0.09f, 255);
 
 			// Create the transfer function.
 			volumetricModel.CreateTransferFunction();
@@ -87,14 +93,6 @@ namespace Renderer.Graphics.Screen
 			// The volumetric model takes awhile to load (mostly due to VolumetricModel.CreateTextureData()) 
 			// so reset the elapsed time so that our screen transition works properly.
 			VolumetricRenderer.Game.ResetElapsedTime();
-
-			//volumetricModel.ColorPoints.Add(new TransferPoint(Color.Black, 0));		// TEMP
-			//volumetricModel.ColorPoints.Add(new TransferPoint(Color.Aqua, 100));	// TEMP
-			//volumetricModel.ColorPoints.Add(new TransferPoint(Color.White, 255));	// TEMP
-			//volumetricModel.AlphaPoints.Add(new TransferPoint(0f, 0));				// TEMP
-			//volumetricModel.AlphaPoints.Add(new TransferPoint(0.5f, 100));			// TEMP
-			//volumetricModel.AlphaPoints.Add(new TransferPoint(0.8f, 200));			// TEMP
-			//volumetricModel.AlphaPoints.Add(new TransferPoint(0f, 255));			// TEMP
 		}
 
 		public override void UnloadContent()
@@ -110,7 +108,7 @@ namespace Renderer.Graphics.Screen
 		{
 			base.HandleInput(input);
 
-			if (input.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.Escape, PlayerIndex.One))
+			if (input.IsKeyPressed(Keys.Escape))
 			{
 				VolumetricRenderer.Game.Components.Remove(volumetricModel);
 
@@ -118,6 +116,62 @@ namespace Renderer.Graphics.Screen
 				ScreenManager.AddScreen(new BackgroundScreen());
 				ScreenManager.AddScreen(new MainMenuScreen());
 				Finished();
+			}
+
+			// Transfer function testing.
+			if (input.IsKeyDown(Keys.OemPlus) || input.IsKeyDown(Keys.OemMinus) ||
+				input.IsKeyDown(Keys.OemCloseBrackets) || input.IsKeyDown(Keys.OemOpenBrackets) ||
+				input.IsKeyDown(Keys.OemQuotes) || input.IsKeyDown(Keys.OemSemicolon) || 
+				input.IsKeyPressed(Keys.D1) || input.IsKeyPressed(Keys.D2) || input.IsKeyPressed(Keys.D3))
+			{
+				if (input.IsKeyDown(Keys.OemPlus) && isoValue < 252 - range)
+					isoValue++;
+				else if (input.IsKeyDown(Keys.OemMinus) && isoValue > 3)
+					isoValue--;
+				else if (input.IsKeyPressed(Keys.OemCloseBrackets) && alphaValue < 0.94f)
+					alphaValue += 0.05f;
+				else if (input.IsKeyPressed(Keys.OemOpenBrackets) && alphaValue > 0.06f)
+					alphaValue -= 0.05f;
+				else if (input.IsKeyDown(Keys.OemQuotes) && range < 252 - isoValue)
+					range++;
+				else if (input.IsKeyDown(Keys.OemSemicolon) && range > 1)
+					range--;
+				else if (input.IsKeyPressed(Keys.D1))
+				{
+					isoValue = 40;
+					alphaValue = 0.1f;
+					range = 90;
+				}
+				else if (input.IsKeyPressed(Keys.D2))
+				{
+					isoValue = 60;
+					alphaValue = 0.1f;
+					range = 50;
+				}
+				else if (input.IsKeyPressed(Keys.D3))
+				{
+					isoValue = 60;
+					alphaValue = 0.25f;
+					range = 20;
+				}
+
+				volumetricModel.TransferPoints = new TransferControlPoints(10, 10);
+
+				// Add the color transfer points.
+				volumetricModel.TransferPoints.AddRGBControlPoint(Color.Red, 0);
+				volumetricModel.TransferPoints.AddRGBControlPoint(Color.Red, 1);
+				volumetricModel.TransferPoints.AddRGBControlPoint(Color.Red, 255);
+
+				// Add the alpha transfer points.
+				volumetricModel.TransferPoints.AddAlphaControlPoint(0f, 0);
+				volumetricModel.TransferPoints.AddAlphaControlPoint(0f, (byte)(isoValue - 2));
+				volumetricModel.TransferPoints.AddAlphaControlPoint(alphaValue, isoValue);
+				volumetricModel.TransferPoints.AddAlphaControlPoint(alphaValue, (byte)(isoValue + range));
+				volumetricModel.TransferPoints.AddAlphaControlPoint(0f, (byte)(isoValue + range + 2));
+				volumetricModel.TransferPoints.AddAlphaControlPoint(0f, 255);
+
+				// Create the transfer function.
+				volumetricModel.CreateTransferFunction();
 			}
 		}
 		#endregion
@@ -128,6 +182,9 @@ namespace Renderer.Graphics.Screen
 			spriteBatch.Begin();
 			spriteBatch.DrawString(font, "ESC - Exit Renderer", new Vector2(10f, 935f), 
 				new Color(Color.Yellow, TransitionAlpha), 0f, Vector2.Zero, 0.5f, SpriteEffects.None, 0f);
+			spriteBatch.DrawString(font, "Isovalue: " + isoValue.ToString(), new Vector2(10f, 5f), Color.White);
+			spriteBatch.DrawString(font, "Alpha: " + alphaValue.ToString(), new Vector2(10f, 40f), Color.White);
+			spriteBatch.DrawString(font, "Range: " + range.ToString(), new Vector2(10f, 75f), Color.White);
 			spriteBatch.End();
 
 			base.Draw(gameTime);

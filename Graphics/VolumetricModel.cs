@@ -36,7 +36,7 @@ namespace Renderer.Graphics
         protected string technique;
         public bool drawWireframeBox { get; set; }
 
-        private static bool is2DTexInitialized = false;
+        private bool is2DTexInitialized = false;
 
 		private TransferControlPoints transferPoints;
 		private Color[] transferFunc;
@@ -120,24 +120,6 @@ namespace Renderer.Graphics
             set
             { transferPoints = value; }
         }
-
-		///// <summary>
-		///// Gets the list of color transfer points used by the transfer functions.
-		///// </summary>
-		//public List<ColorTransferPoint> ColorPoints
-		//{
-		//    get
-		//    { return colorPoints; }
-		//}
-
-		///// <summary>
-		///// Gets the list of alpha transfer points used by the transfer functions.
-		///// </summary>
-		//public List<AlphaTransferPoint> AlphaPoints
-		//{
-		//    get
-		//    { return alphaPoints; }
-		//}
         #endregion
 
         #region Initialization
@@ -158,13 +140,7 @@ namespace Renderer.Graphics
             this.height = height;
             this.depth = depth;
 
-#if DEBUG
-            drawWireframeBox = true;
-#else
             drawWireframeBox = false;
-#endif
-			//colorPoints = new List<TransferPoint>();
-			//alphaPoints = new List<TransferPoint>();
         }
 
         public override void Initialize()
@@ -432,6 +408,9 @@ namespace Renderer.Graphics
             }
 
             transfer2DTex.SetData(transferTex);
+
+			if (effect != null)
+				effect.Parameters["Transfer"].SetValue(transfer2DTex);
 		}
 
         private bool isFormatSupported(SurfaceFormat format)

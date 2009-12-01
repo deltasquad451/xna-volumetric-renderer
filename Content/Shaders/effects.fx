@@ -140,8 +140,8 @@ float4 RayCastPS(VertexShaderOutput input) : COLOR0
 		value = tex3Dlod(VolumeS, pos);
 		
 		// Use the transfer function to get new RGBA values
-		//src = tex1Dlod(TransferS, value.a);
-		src = value;
+		src = tex1Dlod(TransferS, value.a);
+		//src = value;
 		
 		// Opacity correction for varying ray cast sample distances
 		src.a = 1 - pow((1 - src.a), ActualSampleDist / BaseSampleDist);
