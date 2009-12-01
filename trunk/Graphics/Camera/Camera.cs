@@ -4,6 +4,7 @@ using System.Collections;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Renderer.Input;
 
 namespace Renderer.Graphics.Camera
 {
@@ -13,7 +14,7 @@ namespace Renderer.Graphics.Camera
         private const float NEAR_PLANE_DIST = 0.1f;
         private const float FAR_PLANE_DIST = 100.0f;
         private const float SPEED = 4.0f;
-        private const float ANGULAR_SPEED = (float)Math.PI/10.0f;
+        private const float ANGULAR_SPEED = (float)Math.PI/5.0f;
         private const float MIN_DIST = 5.0f;
         private const float MAX_DIST = 30.0f;
 
@@ -24,9 +25,6 @@ namespace Renderer.Graphics.Camera
         public float fov { get; private set; }
         public float aspectRatio { get; private set; }
         public Quaternion rotQuat { get; private set; }
-
-        private KeyboardState currentKeyboardState;
-
         #endregion
 
         #region Initialization
@@ -60,9 +58,10 @@ namespace Renderer.Graphics.Camera
         #region Methods
         public void Update(GameTime gameTime)
         {
-            currentKeyboardState = Keyboard.GetState();
+			InputState input = VolumetricRenderer.Game.Input;
 
-            if (currentKeyboardState.IsKeyDown(Keys.Left)){
+            if (input.IsKeyDown(Keys.Left))
+			{
                 Matrix rotationY;
                 Matrix.CreateRotationY((float)gameTime.ElapsedGameTime.TotalSeconds * ANGULAR_SPEED, out rotationY);
                 Vector4 targetToPos = new Vector4(position - target, 0);
@@ -70,7 +69,8 @@ namespace Renderer.Graphics.Camera
                 position = new Vector3(target.X + targetToPos.X, target.Y + targetToPos.Y, target.Z + targetToPos.Z);
                 rotQuat = Quaternion.Normalize(Quaternion.CreateFromRotationMatrix(rotationY) * rotQuat);
             }
-            else if (currentKeyboardState.IsKeyDown(Keys.Right)){
+			else if (input.IsKeyDown(Keys.Right))
+			{
                 Matrix rotationY;
                 Matrix.CreateRotationY((float)gameTime.ElapsedGameTime.TotalSeconds * -ANGULAR_SPEED, out rotationY);
                 Vector4 targetToPos = new Vector4(position - target, 0);
@@ -78,7 +78,7 @@ namespace Renderer.Graphics.Camera
                 position = new Vector3(target.X + targetToPos.X, target.Y + targetToPos.Y, target.Z + targetToPos.Z);
                 rotQuat = Quaternion.Normalize(Quaternion.CreateFromRotationMatrix(rotationY) * rotQuat);
             }
-            else if (currentKeyboardState.IsKeyDown(Keys.Up))
+			else if (input.IsKeyDown(Keys.Up))
             {
                 Vector3 targetToPos = position - target;
                 float newLength = targetToPos.Length() - ((float)gameTime.ElapsedGameTime.TotalSeconds * SPEED);
@@ -89,7 +89,7 @@ namespace Renderer.Graphics.Camera
                 targetToPos.Normalize();
                 position = target + Vector3.Multiply(targetToPos, newLength);
             }
-            else if (currentKeyboardState.IsKeyDown(Keys.Down))
+			else if (input.IsKeyDown(Keys.Down))
             {
                 Vector3 targetToPos = position - target;
                 float newLength = targetToPos.Length() + ((float)gameTime.ElapsedGameTime.TotalSeconds * SPEED);
@@ -100,7 +100,7 @@ namespace Renderer.Graphics.Camera
                 targetToPos.Normalize();
                 position = target + Vector3.Multiply(targetToPos, newLength);
             }
-            else if (currentKeyboardState.IsKeyDown(Keys.Space))
+			else if (input.IsKeyPressed(Keys.Space))
             {
                 position = new Vector3(2.5f, 2.5f, -7.0f);
                 target = new Vector3(2.5f, 2.5f, 2.5f);

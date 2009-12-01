@@ -34,12 +34,12 @@ namespace Renderer
         private Camera camera;
 
 		private volatile GameTime gameTime;
-		public Thread mainThread;			// This should be private normally, but the compiler is retarded and throws error CS0169 if it's not used.
-		public Thread updateThread;			// This should be private normally, but the compiler is retarded and throws error CS0169 if it's not used.
-		public Thread drawThread;			// This should be private normally, but the compiler is retarded and throws error CS0169 if it's not used.
-		public Thread handleAssertThread;	// This should be private normally, but the compiler is retarded and throws error CS0169 if it's not used.
-		public object updateLock;			// This should be private normally, but the compiler is retarded and throws error CS0169 if it's not used.
-		public object drawLock;				// This should be private normally, but the compiler is retarded and throws error CS0169 if it's not used.
+		public Thread mainThread;			// Should be private, but 'Warnings as Errors' is turned on.
+		public Thread updateThread;			// Should be private, but 'Warnings as Errors' is turned on.
+		public Thread drawThread;			// Should be private, but 'Warnings as Errors' is turned on.
+		public Thread handleAssertThread;	// Should be private, but 'Warnings as Errors' is turned on.
+		public object updateLock;			// Should be private, but 'Warnings as Errors' is turned on.
+		public object drawLock;				// Should be private, but 'Warnings as Errors' is turned on.
 		private UpdateMethod updateMethod;
 		private DrawMethod drawMethod;
 		private bool assertHandled;

@@ -172,86 +172,40 @@ namespace Renderer.Input
 		/// Checks if the specified key is currently down.
 		/// </summary>
 		/// <param name="key">Key to check.</param>
-		/// <param name="playerIndex">Player index to check; NULL checks all players.</param>
 		/// <returns>True if the key is down, false otherwise.</returns>
-		public bool IsKeyDown(Keys key, PlayerIndex? playerIndex)
+		public bool IsKeyDown(Keys key)
 		{
-			if (playerIndex.HasValue)
-			{
-				// Check the input from the specified player.
-				int index = (int)playerIndex.Value;
-				return currentKeyboardStates[index].IsKeyDown(key);
-			}
-			else
-				// Check the input from all players.
-				return (currentKeyboardStates[0].IsKeyDown(key) || currentKeyboardStates[1].IsKeyDown(key) || 
-						currentKeyboardStates[2].IsKeyDown(key) || currentKeyboardStates[3].IsKeyDown(key));
+			return currentKeyboardStates[0].IsKeyDown(key);
 		}
 
 		/// <summary>
 		/// Checks if the specified key has just been pressed.
 		/// </summary>
 		/// <param name="key">Key to check.</param>
-		/// <param name="playerIndex">Player index to check; NULL checks all players.</param>
 		/// <returns>True if the key was just pressed, false otherwise.</returns>
-		public bool IsKeyPressed(Keys key, PlayerIndex? playerIndex)
+		public bool IsKeyPressed(Keys key)
 		{
-			if (playerIndex.HasValue)
-			{
-				// Check the input from the specified player.
-				int index = (int)playerIndex.Value;
-				return (currentKeyboardStates[index].IsKeyDown(key) && previousKeyboardStates[index].IsKeyUp(key));
-			}
-			else
-				// Check the input from all players.
-				return ((currentKeyboardStates[0].IsKeyDown(key) && previousKeyboardStates[0].IsKeyUp(key)) ||
-						(currentKeyboardStates[1].IsKeyDown(key) && previousKeyboardStates[1].IsKeyUp(key)) ||
-						(currentKeyboardStates[2].IsKeyDown(key) && previousKeyboardStates[2].IsKeyUp(key)) ||
-						(currentKeyboardStates[3].IsKeyDown(key) && previousKeyboardStates[3].IsKeyUp(key)));
+			return (currentKeyboardStates[0].IsKeyDown(key) && previousKeyboardStates[0].IsKeyUp(key));
 		}
 
 		/// <summary>
 		/// Checks if the specified key is being held down.
 		/// </summary>
 		/// <param name="key">Key to check.</param>
-		/// <param name="playerIndex">Player index to check; NULL checks all players.</param>
 		/// <returns>True if the key is being held down, false otherwise.</returns>
-		public bool IsKeyHeld(Keys key, PlayerIndex? playerIndex)
+		public bool IsKeyHeld(Keys key)
 		{
-			if (playerIndex.HasValue)
-			{
-				// Check the input from the specified player.
-				int index = (int)playerIndex.Value;
-				return (currentKeyboardStates[index].IsKeyDown(key) && previousKeyboardStates[index].IsKeyDown(key));
-			}
-			else
-				// Check the input from all players.
-				return ((currentKeyboardStates[0].IsKeyDown(key) && previousKeyboardStates[0].IsKeyDown(key)) ||
-						(currentKeyboardStates[1].IsKeyDown(key) && previousKeyboardStates[1].IsKeyDown(key)) ||
-						(currentKeyboardStates[2].IsKeyDown(key) && previousKeyboardStates[2].IsKeyDown(key)) ||
-						(currentKeyboardStates[3].IsKeyDown(key) && previousKeyboardStates[3].IsKeyDown(key)));
+			return (currentKeyboardStates[0].IsKeyDown(key) && previousKeyboardStates[0].IsKeyDown(key));
 		}
 
 		/// <summary>
 		/// Checks if the specified key has just been released.
 		/// </summary>
 		/// <param name="key">Key to check.</param>
-		/// <param name="playerIndex">Player index to check; NULL checks all players.</param>
 		/// <returns>True if the key was just released, false otherwise.</returns>
-		public bool IsKeyReleased(Keys key, PlayerIndex? playerIndex)
+		public bool IsKeyReleased(Keys key)
 		{
-			if (playerIndex.HasValue)
-			{
-				// Check the input from the specified player.
-				int index = (int)playerIndex.Value;
-				return (currentKeyboardStates[index].IsKeyUp(key) && previousKeyboardStates[index].IsKeyDown(key));
-			}
-			else
-				// Check the input from all players.
-				return ((currentKeyboardStates[0].IsKeyUp(key) && previousKeyboardStates[0].IsKeyDown(key)) ||
-						(currentKeyboardStates[1].IsKeyUp(key) && previousKeyboardStates[1].IsKeyDown(key)) ||
-						(currentKeyboardStates[2].IsKeyUp(key) && previousKeyboardStates[2].IsKeyDown(key)) ||
-						(currentKeyboardStates[3].IsKeyUp(key) && previousKeyboardStates[3].IsKeyDown(key)));
+			return (currentKeyboardStates[0].IsKeyUp(key) && previousKeyboardStates[0].IsKeyDown(key));
 		}
 		#endregion
 
@@ -372,6 +326,92 @@ namespace Renderer.Input
 				return currentGamePadStates[(int)playerIndex].ThumbSticks.Left;
 			else
 				return currentGamePadStates[(int)playerIndex].ThumbSticks.Right;
+		}
+
+		/// <summary>
+		/// Checks if the specified key on the keypad is currently down.
+		/// </summary>
+		/// <param name="key">Key to check.</param>
+		/// <param name="playerIndex">Player index to check; NULL checks all players.</param>
+		/// <returns>True if the key is down, false otherwise.</returns>
+		public bool IsKeyPadDown(Keys key, PlayerIndex? playerIndex)
+		{
+			if (playerIndex.HasValue)
+			{
+				// Check the input from the specified player.
+				int index = (int)playerIndex.Value;
+				return currentKeyboardStates[index].IsKeyDown(key);
+			}
+			else
+				// Check the input from all players.
+				return (currentKeyboardStates[0].IsKeyDown(key) || currentKeyboardStates[1].IsKeyDown(key) ||
+						currentKeyboardStates[2].IsKeyDown(key) || currentKeyboardStates[3].IsKeyDown(key));
+		}
+
+		/// <summary>
+		/// Checks if the specified key on the keypad has just been pressed.
+		/// </summary>
+		/// <param name="key">Key to check.</param>
+		/// <param name="playerIndex">Player index to check; NULL checks all players.</param>
+		/// <returns>True if the key was just pressed, false otherwise.</returns>
+		public bool IsKeyPadPressed(Keys key, PlayerIndex? playerIndex)
+		{
+			if (playerIndex.HasValue)
+			{
+				// Check the input from the specified player.
+				int index = (int)playerIndex.Value;
+				return (currentKeyboardStates[index].IsKeyDown(key) && previousKeyboardStates[index].IsKeyUp(key));
+			}
+			else
+				// Check the input from all players.
+				return ((currentKeyboardStates[0].IsKeyDown(key) && previousKeyboardStates[0].IsKeyUp(key)) ||
+						(currentKeyboardStates[1].IsKeyDown(key) && previousKeyboardStates[1].IsKeyUp(key)) ||
+						(currentKeyboardStates[2].IsKeyDown(key) && previousKeyboardStates[2].IsKeyUp(key)) ||
+						(currentKeyboardStates[3].IsKeyDown(key) && previousKeyboardStates[3].IsKeyUp(key)));
+		}
+
+		/// <summary>
+		/// Checks if the specified key on the keypad is being held down.
+		/// </summary>
+		/// <param name="key">Key to check.</param>
+		/// <param name="playerIndex">Player index to check; NULL checks all players.</param>
+		/// <returns>True if the key is being held down, false otherwise.</returns>
+		public bool IsKeyPadHeld(Keys key, PlayerIndex? playerIndex)
+		{
+			if (playerIndex.HasValue)
+			{
+				// Check the input from the specified player.
+				int index = (int)playerIndex.Value;
+				return (currentKeyboardStates[index].IsKeyDown(key) && previousKeyboardStates[index].IsKeyDown(key));
+			}
+			else
+				// Check the input from all players.
+				return ((currentKeyboardStates[0].IsKeyDown(key) && previousKeyboardStates[0].IsKeyDown(key)) ||
+						(currentKeyboardStates[1].IsKeyDown(key) && previousKeyboardStates[1].IsKeyDown(key)) ||
+						(currentKeyboardStates[2].IsKeyDown(key) && previousKeyboardStates[2].IsKeyDown(key)) ||
+						(currentKeyboardStates[3].IsKeyDown(key) && previousKeyboardStates[3].IsKeyDown(key)));
+		}
+
+		/// <summary>
+		/// Checks if the specified key on the keypad has just been released.
+		/// </summary>
+		/// <param name="key">Key to check.</param>
+		/// <param name="playerIndex">Player index to check; NULL checks all players.</param>
+		/// <returns>True if the key was just released, false otherwise.</returns>
+		public bool IsKeyPadReleased(Keys key, PlayerIndex? playerIndex)
+		{
+			if (playerIndex.HasValue)
+			{
+				// Check the input from the specified player.
+				int index = (int)playerIndex.Value;
+				return (currentKeyboardStates[index].IsKeyUp(key) && previousKeyboardStates[index].IsKeyDown(key));
+			}
+			else
+				// Check the input from all players.
+				return ((currentKeyboardStates[0].IsKeyUp(key) && previousKeyboardStates[0].IsKeyDown(key)) ||
+						(currentKeyboardStates[1].IsKeyUp(key) && previousKeyboardStates[1].IsKeyDown(key)) ||
+						(currentKeyboardStates[2].IsKeyUp(key) && previousKeyboardStates[2].IsKeyDown(key)) ||
+						(currentKeyboardStates[3].IsKeyUp(key) && previousKeyboardStates[3].IsKeyDown(key)));
 		}
 		#endregion
 
@@ -519,7 +559,7 @@ namespace Renderer.Input
 		/// <returns>True if the MenuUp command was invoked, false otherwise.</returns>
 		public bool MenuUp()
 		{
-			return IsKeyPressed(Keys.Up, PlayerIndex.One);
+			return IsKeyPressed(Keys.Up);
 		}
 
 		/// <summary>
@@ -528,7 +568,7 @@ namespace Renderer.Input
 		/// <returns>True if the MenuDown command was invoked, false otherwise.</returns>
 		public bool MenuDown()
 		{
-			return IsKeyPressed(Keys.Down, PlayerIndex.One);
+			return IsKeyPressed(Keys.Down);
 		}
 
 		/// <summary>
@@ -537,7 +577,7 @@ namespace Renderer.Input
 		/// <returns>True if the MenuSelect command was invoked, false otherwise.</returns>
 		public bool MenuSelect()
 		{
-			return IsKeyPressed(Keys.Enter, PlayerIndex.One);
+			return IsKeyPressed(Keys.Enter);
 		}
 		#endregion
 	}
