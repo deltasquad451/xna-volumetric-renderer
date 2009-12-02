@@ -60,7 +60,7 @@ namespace Renderer.Graphics.Screen
 
             volumetricModel = new VolumetricModel(VolumetricRenderer.Game, "..\\..\\..\\BostonTeapot.raw", 256, 256, 178);
             volumetricModel.effectAssetName = "..\\..\\Shaders\\effects";
-            volumetricModel.StepScale = 0.5f;
+            volumetricModel.StepScale = 1.4f; //1.4f gives us a ray through the whole volume when viewed along a diagonal
             volumetricModel.scale = 5.0f;
 
 			Debug.Execute(delegate() { volumetricModel.drawWireframeBox = true; });
