@@ -25,6 +25,7 @@ float ActualSampleDist = .5f;
 
 int Side = 2;
 
+float3 CameraPosition;
 float4 ScaleFactor;
 
 texture2D Front;
@@ -110,19 +111,20 @@ float4 RayCastPS(VertexShaderOutput input) : COLOR0
 {   
 	//calculate projective texture coordinates
 	//used to project the front and back position textures onto the cube
-	float2 texC = input.pos.xy /= input.pos.w; // input.pos is the position in image space
+	float2 texC = input.pos.xy /= input.pos.w; // input.pos is the position in homogenous screen space
 	texC.x = 0.5f*texC.x + 0.5f; // texC is the position in screen space
-	texC.y = 0.5f*texC.y + 0.5f;  
+	texC.y = -0.5f*texC.y + 0.5f;  
 	
-    float3 front = tex2D(FrontS, texC); // Position of pixel on front cube face in image space
-    //float3 back = tex2D(BackS, texC); // Position of pixel on back cube face in image space
+    float3 front = tex2D(FrontS, texC); // Position of pixel on front cube face in screen space
+    //float3 back = tex2D(BackS, texC); // Position of pixel on back cube face in screen space
+    
+    //return float4(front*128, 1);
     
     //float3 dir = normalize(back - front);
     //float4 pos = float4(front, 0);
     
-    float3 dir = float3(0, 0, 1);
-    dir = mul(WorldViewProjection, dir);
-    //float3 dir = normalize(front);
+    float3 dir = mul(CameraPosition, WorldInverseTransform);
+    dir = normalize(front - dir);
     float4 pos = float4(front, 0);
     
     float4 dst = float4(0, 0, 0, 0);

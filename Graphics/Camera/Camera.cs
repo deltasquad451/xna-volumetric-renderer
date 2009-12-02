@@ -51,7 +51,7 @@ namespace Renderer.Graphics.Camera
             projectionMat = proj;
             position = new Vector3(2.5f, 2.5f, -7.0f);
             target = new Vector3(2.5f, 2.5f, 2.5f);
-            rotQuat = Quaternion.CreateFromYawPitchRoll(0, 0, 0);
+            rotQuat = Quaternion.CreateFromYawPitchRoll(0, 0, (float)Math.PI);
         }
         #endregion
 
@@ -78,7 +78,27 @@ namespace Renderer.Graphics.Camera
                 position = new Vector3(target.X + targetToPos.X, target.Y + targetToPos.Y, target.Z + targetToPos.Z);
                 rotQuat = Quaternion.Normalize(Quaternion.CreateFromRotationMatrix(rotationY) * rotQuat);
             }
-			else if (input.IsKeyDown(Keys.Up))
+            else if (input.IsKeyDown(Keys.Up))
+            {
+                Matrix cameraMat, rotationUpMat;
+                cameraMat = Matrix.CreateFromQuaternion(rotQuat);
+                rotationUpMat = Matrix.CreateFromAxisAngle(cameraMat.Left, (float)gameTime.ElapsedGameTime.TotalSeconds * ANGULAR_SPEED);
+                Vector4 targetToPos = new Vector4(position - target, 0);
+                targetToPos = Vector4.Transform(targetToPos, rotationUpMat);
+                position = new Vector3(target.X + targetToPos.X, target.Y + targetToPos.Y, target.Z + targetToPos.Z);
+                rotQuat = Quaternion.Normalize(Quaternion.CreateFromRotationMatrix(rotationUpMat) * rotQuat);
+            }
+            else if (input.IsKeyDown(Keys.Down))
+            {
+                Matrix cameraMat, rotationDownMat;
+                cameraMat = Matrix.CreateFromQuaternion(rotQuat);
+                rotationDownMat = Matrix.CreateFromAxisAngle(cameraMat.Left, (float)gameTime.ElapsedGameTime.TotalSeconds * -ANGULAR_SPEED);
+                Vector4 targetToPos = new Vector4(position - target, 0);
+                targetToPos = Vector4.Transform(targetToPos, rotationDownMat);
+                position = new Vector3(target.X + targetToPos.X, target.Y + targetToPos.Y, target.Z + targetToPos.Z);
+                rotQuat = Quaternion.Normalize(Quaternion.CreateFromRotationMatrix(rotationDownMat) * rotQuat);
+            }
+			else if (input.IsKeyDown(Keys.PageUp))
             {
                 Vector3 targetToPos = position - target;
                 float newLength = targetToPos.Length() - ((float)gameTime.ElapsedGameTime.TotalSeconds * SPEED);
@@ -89,7 +109,7 @@ namespace Renderer.Graphics.Camera
                 targetToPos.Normalize();
                 position = target + Vector3.Multiply(targetToPos, newLength);
             }
-			else if (input.IsKeyDown(Keys.Down))
+			else if (input.IsKeyDown(Keys.PageDown))
             {
                 Vector3 targetToPos = position - target;
                 float newLength = targetToPos.Length() + ((float)gameTime.ElapsedGameTime.TotalSeconds * SPEED);
