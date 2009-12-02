@@ -49,7 +49,7 @@ namespace Renderer.Graphics.Screen
             VolumetricRenderer.Game.GraphicsDevice.RenderState.CullMode = CullMode.CullClockwiseFace;
 
 			isoValue = 40;
-			alphaValue = 0.1f;
+			alphaValue = 0.05f;
 			range = 90;
 		}
 
@@ -73,20 +73,45 @@ namespace Renderer.Graphics.Screen
 
 			Debug.Execute(delegate() { volumetricModel.drawWireframeBox = true; });
 
-			volumetricModel.TransferPoints = new TransferControlPoints(10, 10);
+			volumetricModel.TransferPoints = new TransferControlPoints(20, 20);
 
-			// Add the color transfer points.
-			volumetricModel.TransferPoints.AddRGBControlPoint(Color.Red, 0);
-			volumetricModel.TransferPoints.AddRGBControlPoint(Color.Red, 1);
+			//volumetricModel.TransferPoints.AddRGBControlPoint(Color.Red, 0);
+			//volumetricModel.TransferPoints.AddRGBControlPoint(Color.Red, 58);
+			//volumetricModel.TransferPoints.AddRGBControlPoint(Color.Blue, 62);
+			volumetricModel.TransferPoints.AddRGBControlPoint(Color.Blue, 0);
+			volumetricModel.TransferPoints.AddRGBControlPoint(Color.Blue, 58);
+			volumetricModel.TransferPoints.AddRGBControlPoint(Color.Red, 62);
 			volumetricModel.TransferPoints.AddRGBControlPoint(Color.Red, 255);
 
-			// Add the alpha transfer points.
 			volumetricModel.TransferPoints.AddAlphaControlPoint(0f, 0);
-			volumetricModel.TransferPoints.AddAlphaControlPoint(0f, (byte)(isoValue - 2));
-			volumetricModel.TransferPoints.AddAlphaControlPoint(alphaValue, isoValue);
-			volumetricModel.TransferPoints.AddAlphaControlPoint(alphaValue, (byte)(isoValue + range));
-			volumetricModel.TransferPoints.AddAlphaControlPoint(0f, (byte)(isoValue + range + 2));
-			volumetricModel.TransferPoints.AddAlphaControlPoint(0f, 255);
+			volumetricModel.TransferPoints.AddAlphaControlPoint(0f, 28);
+			//volumetricModel.TransferPoints.AddAlphaControlPoint(0f, 38);
+			//volumetricModel.TransferPoints.AddAlphaControlPoint(0.1f, 42);
+			//volumetricModel.TransferPoints.AddAlphaControlPoint(0.1f, 58);
+			volumetricModel.TransferPoints.AddAlphaControlPoint(0.03f, 32);
+			//volumetricModel.TransferPoints.AddAlphaControlPoint(0.15f, 78);
+			//volumetricModel.TransferPoints.AddAlphaControlPoint(0.1f, 82);
+			volumetricModel.TransferPoints.AddAlphaControlPoint(0.03f, 78);
+			volumetricModel.TransferPoints.AddAlphaControlPoint(0.02f, 82);
+			volumetricModel.TransferPoints.AddAlphaControlPoint(0.02f, 130);
+			volumetricModel.TransferPoints.AddAlphaControlPoint(0.1f, 135);
+			//volumetricModel.TransferPoints.AddAlphaControlPoint(0.5f, 188);
+			//volumetricModel.TransferPoints.AddAlphaControlPoint(0f, 192);
+			volumetricModel.TransferPoints.AddAlphaControlPoint(0.1f, 255);
+
+			// Add the color transfer points.
+			//volumetricModel.TransferPoints.AddRGBControlPoint(Color.Red, 0);
+			//volumetricModel.TransferPoints.AddRGBControlPoint(Color.Red, 1);
+			//volumetricModel.TransferPoints.AddRGBControlPoint(Color.Red, 255);
+
+			//// Add the alpha transfer points.
+			//volumetricModel.TransferPoints.AddAlphaControlPoint(0f, 0);
+			//volumetricModel.TransferPoints.AddAlphaControlPoint(0f, (byte)(isoValue - 2));
+			//volumetricModel.TransferPoints.AddAlphaControlPoint(alphaValue, isoValue);
+			//volumetricModel.TransferPoints.AddAlphaControlPoint(alphaValue, (byte)(isoValue + range));
+			//volumetricModel.TransferPoints.AddAlphaControlPoint(0f, (byte)(isoValue + range + 2));
+			//volumetricModel.TransferPoints.AddAlphaControlPoint(0f, 255);
+
 			//volumetricModel.TransferPoints.AddAlphaControlPoint(0f, 0);
 			//volumetricModel.TransferPoints.AddAlphaControlPoint(0.1f, 75);
 			//volumetricModel.TransferPoints.AddAlphaControlPoint(1.0f, 125);
@@ -165,48 +190,48 @@ namespace Renderer.Graphics.Screen
             }
 			else if (input.IsKeyDown(Keys.OemPlus) || input.IsKeyDown(Keys.OemMinus) ||
 				input.IsKeyDown(Keys.OemCloseBrackets) || input.IsKeyDown(Keys.OemOpenBrackets) ||
-				input.IsKeyDown(Keys.OemQuotes) || input.IsKeyDown(Keys.OemSemicolon) || 
-				input.IsKeyPressed(Keys.D1) || input.IsKeyPressed(Keys.D2) || input.IsKeyPressed(Keys.D3))
+				input.IsKeyDown(Keys.OemQuotes) || input.IsKeyDown(Keys.OemSemicolon) ||
+				input.IsKeyPressed(Keys.D1) || input.IsKeyPressed(Keys.D2) || input.IsKeyPressed(Keys.D4))
 			{
-				if (input.IsKeyDown(Keys.OemPlus) && isoValue < 252 - range)
-					isoValue++;
-				else if (input.IsKeyDown(Keys.OemMinus) && isoValue > 3)
-					isoValue--;
-				else if (input.IsKeyPressed(Keys.OemCloseBrackets) && alphaValue < 0.94f)
-					alphaValue += 0.05f;
-				else if (input.IsKeyPressed(Keys.OemOpenBrackets) && alphaValue > 0.06f)
-					alphaValue -= 0.05f;
-				else if (input.IsKeyDown(Keys.OemQuotes) && range < 252 - isoValue)
-					range++;
-				else if (input.IsKeyDown(Keys.OemSemicolon) && range > 1)
-					range--;
-				else if (input.IsKeyPressed(Keys.D1))
+				if (input.IsKeyPressed(Keys.D1))
 				{
-					isoValue = 40;
-					alphaValue = 0.1f;
-					range = 90;
+					isoValue = 30;
+					alphaValue = 0.02f;
+					range = 130;
 				}
 				else if (input.IsKeyPressed(Keys.D2))
 				{
-					isoValue = 60;
-					alphaValue = 0.1f;
-					range = 50;
+					isoValue = 30;
+					alphaValue = 0.03f;
+					range = 30;
 				}
-				else if (input.IsKeyPressed(Keys.D3))
+				else if (input.IsKeyPressed(Keys.D4))
 				{
 					isoValue = 60;
 					alphaValue = 0.25f;
 					range = 20;
 				}
+				else if (isoValue == 0)
+					return;
+				else if (input.IsKeyDown(Keys.OemPlus) && isoValue < 252 - range)
+					isoValue++;
+				else if (input.IsKeyDown(Keys.OemMinus) && isoValue > 3)
+					isoValue--;
+				else if (input.IsKeyDown(Keys.OemCloseBrackets) && alphaValue < 0.997f)
+					alphaValue += 0.002f;
+				else if (input.IsKeyDown(Keys.OemOpenBrackets) && alphaValue > 0.003f)
+					alphaValue -= 0.002f;
+				else if (input.IsKeyDown(Keys.OemQuotes) && range < 252 - isoValue)
+					range++;
+				else if (input.IsKeyDown(Keys.OemSemicolon) && range > 1)
+					range--;
 
-				volumetricModel.TransferPoints = new TransferControlPoints(10, 10);
+				volumetricModel.TransferPoints = new TransferControlPoints(3, 6);
 
-				// Add the color transfer points.
 				volumetricModel.TransferPoints.AddRGBControlPoint(Color.Red, 0);
 				volumetricModel.TransferPoints.AddRGBControlPoint(Color.Red, 1);
 				volumetricModel.TransferPoints.AddRGBControlPoint(Color.Red, 255);
 
-				// Add the alpha transfer points.
 				volumetricModel.TransferPoints.AddAlphaControlPoint(0f, 0);
 				volumetricModel.TransferPoints.AddAlphaControlPoint(0f, (byte)(isoValue - 2));
 				volumetricModel.TransferPoints.AddAlphaControlPoint(alphaValue, isoValue);
@@ -214,7 +239,30 @@ namespace Renderer.Graphics.Screen
 				volumetricModel.TransferPoints.AddAlphaControlPoint(0f, (byte)(isoValue + range + 2));
 				volumetricModel.TransferPoints.AddAlphaControlPoint(0f, 255);
 
-				// Create the transfer function.
+				volumetricModel.CreateTransferFunction();
+			}
+
+			// Transfer function testing.
+			if (input.IsKeyPressed(Keys.D3))
+			{
+				isoValue = 0;
+				alphaValue = 0f;
+				range = 0;
+
+				volumetricModel.TransferPoints = new TransferControlPoints(4, 6);
+
+				volumetricModel.TransferPoints.AddRGBControlPoint(Color.Blue, 0);
+				volumetricModel.TransferPoints.AddRGBControlPoint(Color.Blue, 58);
+				volumetricModel.TransferPoints.AddRGBControlPoint(Color.Red, 62);
+				volumetricModel.TransferPoints.AddRGBControlPoint(Color.Red, 255);
+
+				volumetricModel.TransferPoints.AddAlphaControlPoint(0f, 0);
+				volumetricModel.TransferPoints.AddAlphaControlPoint(0f, 28);
+				volumetricModel.TransferPoints.AddAlphaControlPoint(0.03f, 32);
+				volumetricModel.TransferPoints.AddAlphaControlPoint(0.02f, 130);
+				volumetricModel.TransferPoints.AddAlphaControlPoint(0.1f, 135);
+				volumetricModel.TransferPoints.AddAlphaControlPoint(0.1f, 255);
+
 				volumetricModel.CreateTransferFunction();
 			}
 		}
@@ -226,9 +274,9 @@ namespace Renderer.Graphics.Screen
 			spriteBatch.Begin();
 			spriteBatch.DrawString(font, "ESC - Exit Renderer", new Vector2(10f, 935f), 
 				new Color(Color.Yellow, TransitionAlpha), 0f, Vector2.Zero, 0.5f, SpriteEffects.None, 0f);
-			spriteBatch.DrawString(font, "Isovalue: " + isoValue.ToString(), new Vector2(10f, 5f), Color.White);
-			spriteBatch.DrawString(font, "Alpha: " + alphaValue.ToString(), new Vector2(10f, 40f), Color.White);
-			spriteBatch.DrawString(font, "Range: " + range.ToString(), new Vector2(10f, 75f), Color.White);
+			spriteBatch.DrawString(font, "Isovalues: " + isoValue.ToString() + " - " + (isoValue + range).ToString(), new Vector2(15f, 5f), Color.White);
+			spriteBatch.DrawString(font, "Alpha: " + alphaValue.ToString(), new Vector2(15f, 40f), Color.White);
+			spriteBatch.DrawString(font, "Range: " + range.ToString(), new Vector2(15f, 75f), Color.White);
 			spriteBatch.End();
 
 			base.Draw(gameTime);
