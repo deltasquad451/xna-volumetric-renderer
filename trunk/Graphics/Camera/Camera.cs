@@ -14,7 +14,7 @@ namespace Renderer.Graphics.Camera
         private const float NEAR_PLANE_DIST = 0.1f;
         private const float FAR_PLANE_DIST = 100.0f;
         private const float SPEED = 4.0f;
-        private const float ANGULAR_SPEED = (float)Math.PI/5.0f;
+        private const float ANGULAR_SPEED = (float)Math.PI/3f;
         private const float MIN_DIST = 5.0f;
         private const float MAX_DIST = 30.0f;
 
