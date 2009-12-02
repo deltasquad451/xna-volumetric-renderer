@@ -37,6 +37,7 @@ namespace Renderer.Graphics
         public bool drawWireframeBox { get; set; }
 
         private bool is2DTexInitialized = false;
+        private bool doLighting = false;
 
 		private TransferControlPoints transferPoints;
 		private Color[] transferFunc;
@@ -385,7 +386,7 @@ namespace Renderer.Graphics
                 effect.CurrentTechnique = effect.Techniques[technique];
                 effect.Parameters["Front"].SetValue(front2DTex.GetTexture());
                 effect.Parameters["Back"].SetValue(back2DTex.GetTexture());
-
+                effect.Parameters["DoLighting"].SetValue(doLighting);
                 base.DrawCustomEffect();
             }
         }
@@ -414,6 +415,11 @@ namespace Renderer.Graphics
 			if (effect != null)
 				effect.Parameters["Transfer"].SetValue(transfer2DTex);
 		}
+
+        public void ToggleLighting()
+        {
+            doLighting = !doLighting;
+        }
 
         private bool isFormatSupported(SurfaceFormat format)
         {

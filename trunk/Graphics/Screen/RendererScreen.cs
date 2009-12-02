@@ -118,6 +118,12 @@ namespace Renderer.Graphics.Screen
 				Finished();
 			}
 
+            // Lighting
+            if (input.IsKeyPressed(Keys.D0))
+            {
+                volumetricModel.ToggleLighting();
+            }
+
 			// Transfer function testing.
 			if (input.IsKeyDown(Keys.OemPlus) || input.IsKeyDown(Keys.OemMinus) ||
 				input.IsKeyDown(Keys.OemCloseBrackets) || input.IsKeyDown(Keys.OemOpenBrackets) ||
