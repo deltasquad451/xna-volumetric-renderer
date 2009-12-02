@@ -116,16 +116,14 @@ float4 RayCastPS(VertexShaderOutput input) : COLOR0
 	texC.y = -0.5f*texC.y + 0.5f;  
 	
     float3 front = tex2D(FrontS, texC); // Position of pixel on front cube face in screen space
-    //float3 back = tex2D(BackS, texC); // Position of pixel on back cube face in screen space
+    float3 back = tex2D(BackS, texC); // Position of pixel on back cube face in screen space
     
-    //return float4(front*128, 1);
-    
-    //float3 dir = normalize(back - front);
-    //float4 pos = float4(front, 0);
-    
-    float3 dir = mul(CameraPosition, WorldInverseTransform);
-    dir = normalize(front - dir);
+    float3 dir = normalize(back - front);
     float4 pos = float4(front, 0);
+    
+    //float3 dir = mul(CameraPosition, WorldInverseTransform);
+    //dir = normalize(front - dir);
+    //float4 pos = float4(front, 0);
     
     float4 dst = float4(0, 0, 0, 0);
     float4 src = 0;
