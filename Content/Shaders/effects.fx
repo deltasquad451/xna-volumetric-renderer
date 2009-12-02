@@ -24,7 +24,10 @@ float BaseSampleDist = .5f;
 float ActualSampleDist = .5f;
 
 int Side = 2;
-bool DoLighting;
+bool DoLighting1;
+bool DoLighting2;
+bool DoLighting3;
+bool DoTransferFunction;
 
 float3 CameraPosition;
 float4 ScaleFactor;
@@ -141,17 +144,33 @@ float4 RayCastPS(VertexShaderOutput input) : COLOR0
 		value = tex3Dlod(VolumeS, pos);
 		
 		// Use the transfer function to get new RGBA values
-		src = tex1Dlod(TransferS, value.a);
-		//src = value;
+		if (DoTransferFunction)
+		{
+			src = tex1Dlod(TransferS, value.a);
+		}
+		else
+		{
+			src = value;
+		}
 		
 		// Opacity correction for varying ray cast sample distances
 		src.a = 1 - pow((1 - src.a), ActualSampleDist / BaseSampleDist);
 
-		if (DoLighting)
+		//diffuse shading + fake ambient lighting
+		if (DoLighting1)
+		{	
+			float s = dot(value.xyz, float3(1, 1, 1));
+			src.r = s;
+		}
+		if (DoLighting2)
 		{
-			//diffuse shading + fake ambient lighting
-			float s = dot(value.xyz, float3(0, 1, 1));
-			src.rgb = s * src.rgb + .1f * src.rgb;
+			float s = dot(value.xyz, float3(-1, 1, -1));
+			src.b = s;
+		}
+		if (DoLighting3)
+		{
+			float s = dot(value.xyz, float3(-1, 0, 1));
+			src.g = s;
 		}
 
 		//Front to back blending

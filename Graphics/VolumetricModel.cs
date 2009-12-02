@@ -37,7 +37,10 @@ namespace Renderer.Graphics
         public bool drawWireframeBox { get; set; }
 
         private bool is2DTexInitialized = false;
-        private bool doLighting = false;
+        private bool doLighting1 = false;
+        private bool doLighting2 = false;
+        private bool doLighting3 = false;
+        private bool doTransferFunction = false;
 
 		private TransferControlPoints transferPoints;
 		private Color[] transferFunc;
@@ -386,7 +389,10 @@ namespace Renderer.Graphics
                 effect.CurrentTechnique = effect.Techniques[technique];
                 effect.Parameters["Front"].SetValue(front2DTex.GetTexture());
                 effect.Parameters["Back"].SetValue(back2DTex.GetTexture());
-                effect.Parameters["DoLighting"].SetValue(doLighting);
+                effect.Parameters["DoLighting1"].SetValue(doLighting1);
+                effect.Parameters["DoLighting2"].SetValue(doLighting2);
+                effect.Parameters["DoLighting3"].SetValue(doLighting3);
+                effect.Parameters["DoTransferFunction"].SetValue(doTransferFunction);
                 base.DrawCustomEffect();
             }
         }
@@ -416,9 +422,24 @@ namespace Renderer.Graphics
 				effect.Parameters["Transfer"].SetValue(transfer2DTex);
 		}
 
-        public void ToggleLighting()
+        public void ToggleLighting1()
         {
-            doLighting = !doLighting;
+            doLighting1 = !doLighting1;
+        }
+
+        public void ToggleLighting2()
+        {
+            doLighting2 = !doLighting2;
+        }
+
+        public void ToggleLighting3()
+        {
+            doLighting3 = !doLighting3;
+        }
+
+        public void ToggleTransferFunction()
+        {
+            doTransferFunction = !doTransferFunction;
         }
 
         private bool isFormatSupported(SurfaceFormat format)
