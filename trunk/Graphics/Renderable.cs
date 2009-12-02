@@ -184,6 +184,7 @@ namespace Renderer.Graphics
                 effect.Parameters["WorldViewProjection"].SetValue(worldRootBoneMat *
                                                 VolumetricRenderer.Game.Camera.viewMat *
                                                 VolumetricRenderer.Game.Camera.projectionMat);
+                effect.Parameters["CameraPosition"].SetValue(VolumetricRenderer.Game.Camera.position);
 
                 VolumetricRenderer.Game.GraphicsDevice.Indices = mesh.IndexBuffer;
 

@@ -25,7 +25,7 @@ namespace Renderer.Graphics
     {
         #region Fields
         protected RenderTarget2D front2DTex;
-        protected RenderTarget2D back2DTex;
+        //protected RenderTarget2D back2DTex;
         protected Texture2D transfer2DTex;
         public string volumeAssetName { get; set; }
         protected Texture3D volumeTexture { get; set; }
@@ -305,6 +305,7 @@ namespace Renderer.Graphics
 
             base.DrawCustomEffect();
 
+            /*
             VolumetricRenderer.Game.GraphicsDevice.SetRenderTarget(0, null);
 
             //draw back faces
@@ -314,6 +315,7 @@ namespace Renderer.Graphics
             VolumetricRenderer.Game.GraphicsDevice.RenderState.CullMode = CullMode.CullCounterClockwiseFace;
 
             base.DrawCustomEffect();
+            */
 
             VolumetricRenderer.Game.GraphicsDevice.SetRenderTarget(0, null);
             VolumetricRenderer.Game.GraphicsDevice.RenderState.CullMode = CullMode.CullClockwiseFace;
@@ -356,8 +358,8 @@ namespace Renderer.Graphics
 
                 front2DTex = new RenderTarget2D(VolumetricRenderer.Game.GraphicsDevice, pp.BackBufferWidth, pp.BackBufferHeight,
                                             1, rtFormat, msType, msQuality);
-                back2DTex = new RenderTarget2D(VolumetricRenderer.Game.GraphicsDevice, pp.BackBufferWidth, pp.BackBufferHeight,
-                                            1, rtFormat, msType, msQuality);
+                //back2DTex = new RenderTarget2D(VolumetricRenderer.Game.GraphicsDevice, pp.BackBufferWidth, pp.BackBufferHeight,
+                //                            1, rtFormat, msType, msQuality);
                 is2DTexInitialized = true;
             }
             else
@@ -382,7 +384,7 @@ namespace Renderer.Graphics
 
                 effect.CurrentTechnique = effect.Techniques[technique];
                 effect.Parameters["Front"].SetValue(front2DTex.GetTexture());
-                effect.Parameters["Back"].SetValue(back2DTex.GetTexture());
+                //effect.Parameters["Back"].SetValue(back2DTex.GetTexture());
 
                 base.DrawCustomEffect();
             }
