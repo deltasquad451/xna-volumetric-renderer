@@ -40,7 +40,7 @@ namespace Renderer.Graphics
         private bool doLighting1 = false;
         private bool doLighting2 = false;
         private bool doLighting3 = false;
-        private bool doTransferFunction = false;
+        private bool doTransferFunction = true;
 
 		private TransferControlPoints transferPoints;
 		private Color[] transferFunc;

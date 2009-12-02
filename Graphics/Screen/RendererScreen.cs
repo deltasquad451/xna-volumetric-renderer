@@ -33,6 +33,9 @@ namespace Renderer.Graphics.Screen
 		private byte isoValue;
 		private float alphaValue;
 		private int range;
+
+        private String volumeFile = "BostonTeapot.raw";
+        private Vector3 volumeFileSize = new Vector3(256, 256, 178);
 		#endregion
 
         #region Properties
@@ -58,7 +61,12 @@ namespace Renderer.Graphics.Screen
 			font = rendererContent.Load<SpriteFont>("menufont");
 			spriteBatch = new SpriteBatch(ScreenManager.GraphicsDevice);
 
-            volumetricModel = new VolumetricModel(VolumetricRenderer.Game, "..\\..\\..\\BostonTeapot.raw", 256, 256, 178);
+            LoadVolumeData();
+		}
+
+        public void LoadVolumeData()
+        {
+            volumetricModel = new VolumetricModel(VolumetricRenderer.Game, "..\\..\\..\\" + volumeFile, (int)volumeFileSize.X, (int)volumeFileSize.Y, (int)volumeFileSize.Z);
             volumetricModel.effectAssetName = "..\\..\\Shaders\\effects";
             volumetricModel.StepScale = 1.4f; //1.4f gives us a ray through the whole volume when viewed along a diagonal
             volumetricModel.scale = 5.0f;
@@ -93,7 +101,7 @@ namespace Renderer.Graphics.Screen
 			// The volumetric model takes awhile to load (mostly due to VolumetricModel.CreateTextureData()) 
 			// so reset the elapsed time so that our screen transition works properly.
 			VolumetricRenderer.Game.ResetElapsedTime();
-		}
+        }
 
 		public override void UnloadContent()
 		{
@@ -117,6 +125,24 @@ namespace Renderer.Graphics.Screen
 				ScreenManager.AddScreen(new MainMenuScreen());
 				Finished();
 			}
+
+            // Volumetric Model
+            if (input.IsKeyPressed(Keys.OemTilde))
+            {
+                if (volumeFile.Contains("skull"))
+                {
+                    volumeFile = "BostonTeapot.raw";
+                    volumeFileSize = new Vector3(256, 256, 178);
+                }
+                else
+                {
+                    volumeFile = "skull.raw";
+                    volumeFileSize = new Vector3(256, 256, 256);
+                }
+
+                VolumetricRenderer.Game.Components.Remove(volumetricModel);
+                LoadVolumeData();
+            }
 
             // Lighting
             if (input.IsKeyPressed(Keys.D8))
