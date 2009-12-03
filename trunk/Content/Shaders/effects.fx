@@ -185,7 +185,7 @@ float4 RayCastPS(VertexShaderOutput input) : COLOR0
 		pos.xyz += Step;
 		
 		//break if the position is greater than <1, 1, 1>
-		if(abs(pos.x) > 5.0f || abs(pos.y) > 5.0f || abs(pos.z) > 5.0f)
+		if(pos.x > 1.0f || pos.y > 1.0f || pos.z > 1.0f)
 			i = Iterations; // effectively a "break"
     }
 
