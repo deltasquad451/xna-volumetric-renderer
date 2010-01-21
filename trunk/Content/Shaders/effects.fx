@@ -1,3 +1,5 @@
+// Modified effect shader
+// Original one posted on "Graphics Runner" blog: http://graphicsrunner.blogspot.com/2009/01/volume-rendering-101.html
 
 struct VertexShaderInput
 {

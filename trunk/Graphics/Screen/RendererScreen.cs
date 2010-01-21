@@ -66,8 +66,8 @@ namespace Renderer.Graphics.Screen
 
         public void LoadVolumeData()
         {
-            volumetricModel = new VolumetricModel(VolumetricRenderer.Game, "..\\..\\..\\" + volumeFile, (int)volumeFileSize.X, (int)volumeFileSize.Y, (int)volumeFileSize.Z);
-            volumetricModel.effectAssetName = "..\\..\\Shaders\\effects";
+            volumetricModel = new VolumetricModel(VolumetricRenderer.Game, "Content\\Models\\" + volumeFile, (int)volumeFileSize.X, (int)volumeFileSize.Y, (int)volumeFileSize.Z);
+            volumetricModel.effectAssetName = "Shaders\\effects";
             volumetricModel.StepScale = 1.4f; //1.4f gives us a ray through the whole volume when viewed along a diagonal
             volumetricModel.scale = 5.0f;
 
