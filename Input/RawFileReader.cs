@@ -11,7 +11,7 @@ using Renderer.Diagnostics;
  * Texture3D texture3D = new Texture3D(VolumetricRenderer.Game.GraphicsDevice, 256, 256, 178, 0,
  *                                     TextureUsage.Linear, SurfaceFormat.Single);
  * Engine.Input.RawFileReader tempFileReader = new Engine.Input.RawFileReader();
- * tempFileReader.Open("..\\..\\..\\BostonTeapot.raw");
+ * tempFileReader.Open("BostonTeapot.raw");
  * tempFileReader.GetRawData(texture3D);
  * tempFileReader.Close();
  */
