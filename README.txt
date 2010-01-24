@@ -1,8 +1,11 @@
 Installation Steps:
-* Run Setup.exe and follow the steps to install the necessary .NET framework and XNA 3.1 redistributable.
+* Run Setup.exe and follow the steps to install the necessary .NET framework 3.5 and XNA 
+3.0 redistributable.  An internet connection is required for setup to download and install
+these dependencies.
 
 Running the Application:
-* Run VolumetricRenderer.exe after installing the redistributable packages mentioned above
+* Run VolumetricRenderer.exe after running setup.  You can also find a link to run this
+application in the Start Menu.
 
 Controls:
 Keys  1-5:Toggle various Isovalue presets
